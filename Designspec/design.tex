@@ -1,0 +1,59 @@
+\documentclass{TDP005mall}
+\usepackage{graphicx}
+\newcommand{\version}{Version 1.0}
+\author{Agnes Hallberg, \url{agnha531@student.liu.se}\\
+  Eric Jönsson, \url{erijo137@student.liu.se}}
+\title{Designspecifikation}
+\date{2018-11-27}
+\rhead{Agnes Hallberg\\
+  Eric Jönsson\\}
+\begin{document}
+\projectpage
+
+\section*{Revisionshistorik}
+\begin{table}[!h]
+\begin{tabularx}{\linewidth}{|l|X|l|}
+\hline
+Ver. & Revisionsbeskrivning & Datum \\\hline
+1.0 & Första utkast  & 18-11-27 \\\hline
+\end{tabularx}
+\end{table}
+
+\section{Detaljbeskrivning av Player}
+Playerklassen ska representera karaktären spelaren kontrollerar. Spelaren har tre olika attacker att välja mellan samt tre riktningar att röra sig i. Spelkaraktären kan inte lämna spelplanen. Klassen Player ärver från överklassen Character. Följande klassmedlemmar finns i Playerklassen:
+\begin{itemize}
+\item int hp; ärvs från Character. Denna datamedlem innehåller information om hur mycket skada spelkaraktären kan ta innan förlust.
+\item vector<double> position; ärvs från Character. position sparar spelkaraktärens koordinater på banan.
+\item vector <double > hitbox; ärvs från Character. Datamedlemmen sparar spelkaraktärens storlek.
+\item double movespeed; ärvs från Character. Dikterar hur snabbt spelkaraktären kan röra sig per tick.
+\item void move(); ärvs från Character. Medlemsfunktionen kallas genom tangenttryckning av spelaren och uppdaterar spelkaraktärens position.
+\item void attack\_weak(bool high). En attackfunktion som kallas genom tangenttryckning och försätter spelkaraktären i attackläge. Vid attackläge får spelkaraktären en extra hitbox framför sig som fienden kan ta skada av vid kollision. Det finns två olika attacklägen; ett högt och ett lågt. Vilket som sker beror på vilken tangent spelaren tryckt på.
+\item void attack\_strong(). En attackfunktion som kallas genom tangenttryckning. Försätter spelkaraktären i ett attackläge som fungerar snarlikt det tidigare nämnda attackläget. Denna attack varar dock längre än de alternativa attackerna. Vissa fiender tar enbart skada av detta attackläge.
+\item void jump(). Spelkaraktären rör sig i y-led till en viss y-koordinat och sedan tillbaka i motsatt riktning.
+\end{itemize}
+\section{Beskrivning av Enemy}
+Enemyklassen ska reprensentera fienderna som spelaren behöver besegra. Enemyklassen har tre underklasser; Peasant, Knight samt Village fool. Enemy är en abstrakt klass. Spelkaraktären tar skada när den kolliderar med någon av Enemyobjekten. Fienderobjektens mål är att röra sig in i spelkaraktären. Enemyklassen ärver från Characterklassen.
+\begin{itemize}
+\item
+\item int hp; ärvs från Character. Denna datamedlem innehåller information om hur mycket skada Enemyobjektet kan ta innan destruktion.
+\item vector<double> position; ärvs från Character. position sparar Enemyobjektets koordinater på banan.
+\item vector <double > hitbox; ärvs från Character. Datamedlemmen sparar Enemyobjektets storlek.
+\item double movespeed; ärvs från Character. Dikterar hur snabbt Enenmyobjektet kan röra sig per tick.
+\item void move(); ärvs från Character. Funktionen kallas varje tick och uppdaterar Enemyobjektets position närmre spelkaraktären.
+\item int immunity. Används i resolve\_hit() för att avgöra om Enemyobjektet ska ta skada eller inte.
+\item void resolve\_hit(). Denna funktion kallas när spelkaraktären träffar ett fiendeobjekt med en attack. Om attacken inte motsvarar värdet i immunity tar fienden skada.
+\end{itemize}
+\subsection{Peasant}
+Peasant är den vanligaste förekommande fiendetypen och finns i två varianter. Det som skiljer varianterna åt är värdet i immunity. Texturen på fienden visar vilken immunity den har.
+Peasant rör sig mot spelkaraktären. 
+\subsection{Knight}
+Knight ska upplevas svårare att besegra än Peasant. Knight rör sig långsammare än Peasant och spelkaraktären. Knights attack är långsam och försätter den i ett attackläge likt spelkaraktärens. Knight är immun mot svaga attacker. Knight kräver fler attacker för att besegras än andra fiendetyper.
+\begin{itemize}
+\item void initiate\_attack(). Denna funktion kallas när spelaren är inom räckhåll för Knights attack. Knight står stilla i attackläge under hela sin attack.
+\end{itemize}
+\subsection{Village Fool}
+Village fool rör sig inte mot spelkaraktären utan förflyttar sig rakt över spelplanen. 
+\begin{itemize}
+\item 
+\end{itemize}
+\end{document}

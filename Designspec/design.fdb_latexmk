@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1542803230 "krav.tex" "krav.pdf" "krav" 1542803230
+["pdflatex"] 1543334514 "design.tex" "design.pdf" "design" 1543334515
   "/etc/texmf/web2c/texmf.cnf" 1537253639 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1480098689 1528 f853c4d1b4e0550255e02831fdc8496f ""
@@ -125,14 +125,13 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1520210507 32485 c64754543d8ac501bea6e75e209ea521 ""
   "/var/lib/texmf/web2c/xetex/xelatex.fmt" 1537253730 3703689 94ae7e388e1bb338b5d9e93e92692209 ""
   "TDP005mall.cls" 1475675868 1800 69340b0dac072f4ccad9d417b7380151 ""
-  "Visual.png" 1542800529 9841 a229a2d31907d70f897b3c29f01bf95c ""
+  "design.aux" 1543334515 1255 b16e557fe6b990bca987c32348f7b13e ""
+  "design.out" 1543334515 304 bb5e0f5533410f145c69e5c8344abc17 ""
+  "design.tex" 1543334514 4494 a378e9f0a8392a73fdf5997ccd999244 ""
   "ida.png" 1411557188 7786 f8e6fdcd3fff5911dca9765ffa4de313 ""
-  "krav.aux" 1542802770 2384 33cd6aaf6273b9b117c98c0cbc92b921 ""
-  "krav.out" 1542802770 1018 cf8726fbdda7b67b78f8ae0a6bfcbb2e ""
-  "krav.tex" 1542803230 10761 ba9ec57018d3728cab0515f0d1241be2 ""
   "lith.png" 1473074252 15882 4db45f42034d096c9aba5be88636d034 ""
   (generated)
-  "krav.pdf"
-  "krav.log"
-  "krav.out"
-  "krav.aux"
+  "design.pdf"
+  "design.out"
+  "design.log"
+  "design.aux"
