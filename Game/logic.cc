@@ -3,7 +3,7 @@
 //CONSTRUCTORS
 //CHARACTER
 Character::Character(sf::Texture texture, int hp, sf::Vector2f speed, sf::RectangleShape hitbox)
-    :hp{hp}, hitbox{hitbox}, speed{speed}
+    :Sprite{texture}, hp{hp}, hitbox{hitbox}, speed{speed}
 {
     setTexture(texture);
 }
@@ -15,7 +15,16 @@ Player::Player(sf::Texture texture, int hp, sf::Vector2f speed, sf::RectangleSha
 }
 
 //PLAYER FUNCTIONS
-void attack_light(){}
-void attack_heavy(){}
-void jump(){};
+void Player::attack_light()
+{
+    std::cout << "Light attack" << std::endl;
+}
+void Player::attack_heavy()
+{
+
+}
+void Player::jump()
+{
+
+};
 

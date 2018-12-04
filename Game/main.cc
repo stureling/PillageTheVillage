@@ -21,18 +21,24 @@ int main()
     p.setPosition(sf::Vector2f{50.f, 40.f});
     p.setTexture(player_tex);
     window.setVerticalSyncEnabled(true);
+    sf::Event event;
     while(window.isOpen())
-    { 
-         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        {
-            p.move(speed);
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        {
-            p.move(-speed.x, speed.y);
-        }
-        window.draw(background);
-        window.draw(p);
-        window.display();
+    {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+            {
+                p.move(speed);
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+            {
+                p.move(-speed.x, speed.y);
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
+            {
+                p.attack_light();
+            }
+
+            window.draw(background);
+            window.draw(p);
+            window.display();
     }
 }
