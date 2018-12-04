@@ -5,18 +5,21 @@ int main()
     sf::RenderWindow window{sf::VideoMode(960, 480), "Hang in there, bud."};
     sf::Texture background_tex;
     sf::Texture player_tex;
-    sf::Vector2f speed{3.0, 0.0};
+    sf::Vector2f speed{4.0, 0.0};
     sf::RectangleShape hitbox{sf::Vector2f{1.0, 1.0}};
     
     if (!background_tex.loadFromFile("tpdog.jpg"))
     {
         return -1;
     }
-    if (!player_tex.loadFromFile("icon.jpg"))
+    if (!player_tex.loadFromFile("player.png"))
     {
         return -1;
     }
+    sf::Sprite background{background_tex};
     Player p(player_tex, 3, speed, hitbox);   
+    p.setPosition(sf::Vector2f{50.f, 40.f});
+    p.setTexture(player_tex);
     window.setVerticalSyncEnabled(true);
     while(window.isOpen())
     { 

@@ -11,7 +11,7 @@
        
 }*/
 
-class Character : public Sprite
+class Character : public sf::Sprite
 {
     public:
         Character(sf::Texture texture, int hp, sf::Vector2f speed, sf::RectangleShape hitbox);
