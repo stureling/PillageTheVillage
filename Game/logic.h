@@ -15,27 +15,28 @@
 class Character : public sf::Sprite
 {
     public:
-        Character(sf::Texture texture, int hp, sf::Vector2f speed, sf::RectangleShape hitbox);
+        Character(int hp, sf::Vector2f speed, sf::RectangleShape hitbox);
+        sf::Vector2f const speed; 
     protected:
         int hp;
         sf::RectangleShape hitbox;
-        sf::Vector2f const speed; 
 };
 class Player : public Character
 {
     public:
-        Player(sf::Texture texture, int hp, sf::Vector2f speed, 
+        Player(int hp, sf::Vector2f speed, 
                 sf::RectangleShape hitbox);
         void attack_light();
         void attack_heavy();
         void jump();
 };
 
-/*class Enemy : public Character
+class Enemy : public Character
 {
     public:
-        Enemy(std::map<char, bool> immunity);
+        Enemy(int hp, sf::Vector2f speed, sf::RectangleShape hitbox, std::map<char, bool> immunity);
         void resolve_hit();
+        virtual void update(sf::Vector2f player_pos);
     protected:
         std::map<char, bool> immunity;
         bool valid_hit();
@@ -45,10 +46,17 @@ class Player : public Character
 class Knight : public Enemy
 {
     public:
-        Knight();
+        Knight(int hp, sf::Vector2f speed, sf::RectangleShape hitbox);
         void attack();  
+    private:
+    std::map<char, bool> k_immunity
+    {
+    {'w', true},
+    {'s', false}
+    };
+        
 };
-
+/*
 class Peasant : public Enemy
 {
     public:
