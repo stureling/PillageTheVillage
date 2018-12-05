@@ -68,49 +68,46 @@ int PlayState()
     
     std::map<char, bool> m{{'c', true}};
     Player p(3, sf::Vector2f{4.f, 0.f}, hitbox);   
+    p.setOrigin(386.f, 0.f);
     Enemy e(3, sf::Vector2f{2.f, 0.f}, hitbox, m);   
     p.setPosition(sf::Vector2f{50.f, 60.f});
     e.setPosition(sf::Vector2f{700.f, 300.f});
 
     //Load and set textures
-    background_tex.loadFromFile("static/textures/tpdog.jpg");
-    player_tex.loadFromFile("static/textures/player_with_sword.png");
+    player_tex.loadFromFile("static/textures/player.png");
     p.setTexture(player_tex);
     e.setTexture(player_tex);
     p.setScale(sf::Vector2f{0.3f, 0.3f});
     e.setScale(sf::Vector2f{0.3f, 0.3f});
-    sf::Sprite background{background_tex};
-
-
     window.setVerticalSyncEnabled(true);
     while(window.isOpen())
     {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && p.getPosition().x < 600.f)
-            {
-                p.setScale(sf::Vector2f{0.3f, 0.3f});
-                p.move(p.speed);
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && p.getPosition().x > 0.f)
-            {
-                p.setScale(sf::Vector2f{-0.3f, 0.3f});
-                p.move(-p.speed.x, p.speed.y);
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
-            {
-                sf::Thread thread(&Player::attack_light, &p);
-                thread.launch();
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-            {
-                window.close();
-            }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && p.getPosition().x < 600.f)
+        {
+            p.setScale(sf::Vector2f{0.3f, 0.3f});
+            p.move(p.speed);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && p.getPosition().x > 0.f)
+        {
+            p.setScale(sf::Vector2f{-0.3f, 0.3f});
+            p.move(-p.speed);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
+        {
+            sf::Thread thread(&Player::attack_light, &p);
+            thread.launch();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+        {
+            window.close();
+        }
 
-            e.update(p.getPosition());
-            window.clear();
-            window.draw(background);
-            window.draw(p);
-            window.draw(e);
-            window.display();
+        sf::sleep(sf::seconds(2));
+        e.update(p.getPosition());
+        window.clear();
+        window.draw(p);
+        window.draw(e);
+        window.display();
     }
     return 1; 
 
