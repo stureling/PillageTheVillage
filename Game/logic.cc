@@ -38,11 +38,11 @@ int PlayState()
     sf::Vector2f speed{4.0, 0.0};
     sf::RectangleShape hitbox{sf::Vector2f{1.0, 1.0}};
     
-    if (!background_tex.loadFromFile("tpdog.jpg"))
+    if (!background_tex.loadFromFile("static/textures/tpdog.jpg"))
     {
         return -1;
     }
-    if (!player_tex.loadFromFile("player.png"))
+    if (!player_tex.loadFromFile("static/textures/player.png"))
     {
         return -1;
     }
@@ -83,3 +83,6 @@ void MenuState()
 
 };
 
+//GAME MAIN
+
+int Game();
