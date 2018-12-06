@@ -33,7 +33,14 @@ void Player::update(sf::Time time)
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && getPosition().x < 900.f)
     {
+        setScale(sf::Vector2f(1.f, 1.f));
         move(speed * time.asSeconds());
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && getPosition().x < 0.f)
+    {
+        setScale(sf::Vector2f(-1.f, 1.f));
+        move(-speed * time.asSeconds());
+
     }
 }
 
@@ -44,7 +51,7 @@ void PlayState::addEnemy(Entity* entity)
 
 void PlayState::update(sf::Time time)
 {
-    player->update(time);
+    //player->update(time);
     for( Entity* e : enemies )
     {
         e->update(time);
@@ -66,7 +73,7 @@ int main()
     Player p{3, sf::Vector2f{1000.f, 0.f}, player_t};
     p.setPosition(sf::Vector2f{200.f, 200.f});
     PlayState playstate{};
-    playstate.addPlayer(&p);
+    playstate.addEnemy(&p);
     sf::Clock clock;
     window.setVerticalSyncEnabled(true);
     while(window.isOpen())
