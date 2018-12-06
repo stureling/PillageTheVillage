@@ -12,34 +12,44 @@
        
 }*/
 
+
 class Entity : public sf::Sprite
 {
     public:
         Entity(int hp, sf::Vector2f speed);
-        //virtual void timed_move();
-        //virtual void resolve_hit();
-        sf::Vector2f const speed; 
+        virtual void update(sf::Time tick) = 0;
+        //virtual void resolve_hit() = 0;
     protected:
         int hp;
+        sf::Vector2f const speed; 
 };
 class Player : public Entity
 {
     public:
-        Player(int hp, sf::Vector2f speed);
-        //void timed_move() override;
-        void attack_light();
-        void attack_heavy();
-        void jump();
+        Player(int hp, sf::Vector2f speed, sf::Texture &texture);
+        void update(sf::Time tick);
+        //void attack_light();
+        //void attack_heavy();
+        //void jump();
+    private:
+        //bool is_attacking;
+};
+class Sword : public Entity
+{
+    public:
+
+    private:
+
 };
 
 class Enemy : public Entity
 {
     public:
-        Enemy(int hp, sf::Vector2f speed, std::map<char, bool> immunity);
+        Enemy(int hp, sf::Vector2f speed);
         //void resolve_hit() override;
         virtual void update(sf::Vector2f player_pos, sf::Time tick);
+        sf::Vector2f getPlayerPos();
     protected:
-        std::map<char, bool> immunity;
         bool valid_hit();
 };
 
@@ -55,18 +65,23 @@ class Knight : public Enemy
     {'s', false}
     };
 };
-class Sword : public Entity
-{
-    public:
 
-    private:
 
-};
-/*
 class Peasant : public Enemy
 {
     public:
         Peasant();
-};*/
+};
 
+class PlayState
+{
+    public:
+        PlayState();
+        void addEnemy(Entity* entity);
+        void addPlayer(Entity* player);
+        void update(sf::Time tick);
+    private:
+        std::vector<Entity*> enemies;
+        Entity* player;
+};
 #endif
