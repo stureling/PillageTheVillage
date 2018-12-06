@@ -1,5 +1,6 @@
-\usepackage{graphicx}
 \documentclass{TDP005mall}
+\usepackage{graphicx}
+\usepackage[normalem]{ulem}
 \newcommand{\version}{Version 1.0}
 \author{Agnes Hallberg, \url{agnha531@student.liu.se}\\
   Eric Jönsson, \url{erijo137@student.liu.se}}
@@ -16,26 +17,37 @@
 \hline
 Ver. & Revisionsbeskrivning & Datum \\\hline
 1.0 & Första utkast  & 18-11-20 \\\hline
+1.1 & Reviderad version  & 18-12-03 \\\hline
 \end{tabularx}
 \end{table}
 
 \section{Speldesign}
 
 \subsection{Spelidé}
-Spelet utspelar sig i en 2D-värld sedd från sidan. Spelaren styr en karaktär som kan röra sig i x-led och hoppa. Karaktären har tre typer av attacker, lätt uppåt, lätt nedåt och stark, som är bundna till olika tangenter.  
+Spelet utspelar sig i en 2D-värld. Spelaren styr en karaktär som kan gå och hoppa. Karaktären har tre typer av attacker, lätt uppåt, lätt nedåt och stark, som är bundna till olika tangenter.  
 
-Spelet går ut på att slåss och överleva mot en hord av fiender. Det finns speciella attacktekniker för att maximera skada och effektivitet. För att klara av utmaningen måste spelaren dels tajma sina attacker samt välja rätt attack vid rätt tillfälle. Fienderna kommer från spelplanens vertikala sidor i ett förutbestämt mönster. Fiendens vapen är till viss del slumpgenererat för att varje spelomgång ska upplevas unik. 
-För att vinna spelet ska spelaren besegra alla fiender. Fienderna skickas in i en förbestämd ordning och intensitet. När sista fienden är besegrad visas en vinstskärm.
+Spelet går ut på att slåss och överleva mot en hord av fiender. 
+Det finns speciella attacktekniker för att maximera skada och effektivitet. 
+För att klara av utmaningen måste spelaren dels tajma sina attacker samt välja rätt attack vid rätt tillfälle. 
+Fienderna kommer från spelplanens vertikala sidor i ett förutbestämt mönster. 
+Spelet har slumpgenerarde element så att varje spelomgång upplevs som unik.
+För att vinna spelet ska spelaren besegra alla fiender. 
+Fienderna skickas in i en förbestämd ordning och intensitet. 
+När sista fienden är besegrad visas en vinstskärm.
 
 \subsection{Målgrupp}
-Spelets komplexitet gör det utmanande att bemästra. Dessutom är spelet designat för att vara svårt att vinna samt lätt att förlora. Hög bemästring av spelmekaniken är ett krav för att framskrida i spelet. Den huvudsakliga målgruppen är personer med tidigare spelerfarenhet som söker efter ett utmanande spel. Highscore implementationen gör att spelare kan jämföra sin prestation med andra spelare och triggar de till att spela om spelet flertalet gånger för att förbättra sitt highscore.
+Spelets komplexitet gör det utmanande att bemästra. 
+Dessutom är spelet designat för att vara svårt att vinna samt lätt att förlora. 
+Spelaren måste bemästra spelmekaniken för att avancera i spelet. 
+Den huvudsakliga målgruppen är personer med tidigare spelerfarenhet som söker efter ett utmanande spel. 
+Implementationen av poäng gör att spelare kan jämföra sin prestation med andra spelare och triggar de till att spela om spelet flertalet gånger för att förbättra sitt poängrekord.
 
 \subsection{Spelupplevelse}
 Vi fokuserar på att spelet ska ha ett roligt och intressant stridssystem. Spelet ska bli successivt svårare i lagom takt för att spelaren inte ska bli frustrerad eller uttråkad. Spelet ska även ha ett poängsystem för att spelaren ska bli motiverad till att försöka igen för att slå sitt eller någon annans rekord.
 
 \subsection{Spelmekanik}
 Spelet styrs helt och hållet med ett tangentbord i både spel och menyer.
-Spelaren kan navigera menyerna med antingen W, A, S, D, eller piltangenterna.
+Spelaren kan navigera menyerna med antingen W, A, D, eller piltangenterna.
 Spelaren styr sin karaktär i spelet enligt följande tabell:
 \begin{table}[h!]
 \begin{tabular}{|l|l|}
@@ -52,29 +64,46 @@ L       & Tung attack      \\ \hline
 \end{table}
 \subsection{Regler}
 \subsubsection{Spelplan}
-Spelplanen har en förutbestämd storlek. Inga objekt kan passera skärmens yttre gräns. Spelplanen läses in från fil för att spelet lätt kan expanderas med fler arenor.
+Spelplanen har en förutbestämd storlek. 
+Spelarkaraktären kan inte passera skärmens yttre gräns. 
+Spelplanen läses in från fil för att spelet lätt ska kunna expanderas med fler spelplaner.
 \subsubsection{Spelare}
-Spelkaraktären styrs av spelarens tangenttryckningar. Spelaren kan gå åt vänster eller höger. Spelaren kan hoppa för att undvika fiender. I början av spelet befinner sig spelkaraktären i mitten av skärmen.
+Spelarkaraktären styrs av spelarens tangenttryckningar enligt tabellen i avnsitt 1.4. Spelaren kan gå åt vänster eller höger samt hoppa. I början av spelet befinner sig spelarkaraktären i mitten av skärmen.
 
-Spelaren har tre olika attacker att välja på, lätt hög, lätt låg och tung. När spelaren utför en attack kommer ett svärd visas framför spelaren på ett unikt sätt för varje attack. Attacken utförs på alla objekt som vidrörs av svärdet. Den tunga attacken tar längre tid att genomföra och behöver tid för att återställas innan den kan användas igen.
+Spelaren har tre olika attacker att välja på, lätt hög, lätt låg och tung. 
+När spelaren attackerar kommer ett svärd visas framför spelarkaraktären på ett unikt sätt för varje attack. 
+Attacken skadar alla objekt som vidrörs av svärdet i enlighet med beskriviningen i avsnitt 1.5.3. 
+Den tunga attacken tar längre tid att genomföra och försätter spelarkarktären i ett återhämtningsläge där spelarkaraktären inte kan utföra någon attack under ett visst tidsintervall.
 
-Om spelaren kommer i kontakt med en fiende tar spelaren skada, blinkar för att indikera skada och blir immun mot ytterligare skada i några ögonblick. Spelaren kan ta skada tre gånger innan spelaren blir utslagen. Spelet är över när spelaren blir utslagen.
+Om spelaren kommer i kontakt med en fiende tar spelaren skada, blinkar för att indikera skada och blir immun mot ytterligare skada i några ögonblick. Spelaren kan ta skada tre gånger innan spelaren blir utslagen. Spelet är över när spelarkaraktären blir utslagen, spelaren besegrar alla fiender eller om spelaren återvänder till huvudmenyn.
 
 \subsubsection{Fiender}
-Fiender kommer att röra sig mot spelaren. Om spelaren på något sätt går förbi en fiende kommer den att vända sig mot spelaren efter några ögonblick. Fiender kommer att starta vid banans kanter. Under en runda i spelet kommer olika grupper av fiender att starta. Hur många fiender som startar på en gång beror på hur länge spelet har pågått. En runda är slut när alla fiender är besegrade. 
+Fiender kommer att röra sig mot spelarkaraktären. 
+När fienderna måste byta riktning för att följa spelarkaraktären sker det med viss fördröjning. 
+Fiender kommer att starta vid banans kanter. 
+Under en runda i spelet kommer olika grupper av fiender att starta. 
+Hur många fiender som startar på en gång beror på hur länge spelet har pågått. En runda är slut när alla fiender är besegrade. 
 
 För att besegra en fiende måste spelaren träffa fienden med en attack. Om fienden blir träffad av attacken tar den skada och försvinner från banan. Olika fiender blir skadade av olika attacker.
 
 \begin{enumerate}
 \item Bonde
 
-  Bonden rör sig lite snabbare än spelarens karaktär. Han tar skada av en av de lätta attackerna. Bonden kan hålla i sitt vapen på två sätt. Det ena gör bonden immun mot lätta, höga attacker. Det andra gör bonden immun mot lätta, låga attacker. Vapnens position representeras visuellt på skärmen för att vägleda spelaren.
+    Bonden rör sig lite snabbare än spelarens karaktär. 
+    Den tar skada av en av de lätta attackerna. 
+    Det finns två varianter av bonden och det är varianten som styr vilken attack den tar skada av. 
+    De olika varianterna representeras av olika texturer för att vägleda spelaren.
 \item Byfåne
 
-  Byfånen springer snabbt över banan i ett försök att skada spelaren när hen är distraherad. Byfånen vänder inte sig när han sprungit förbi spelaren. Byfånen tar skada av alla attacker.
+  Byfånen springer snabbt över banan i ett försök att skada spelarkaraktären. 
+  Byfånen vänder sig inte när den sprungit förbi spelaren. 
+  Byfånen tar skada av alla attacker.
 \item Riddare
 
-  Riddaren är långsam och besegras först efter två hårda attacker. Riddaren attackerar med en långsam attack. Spelaren behöver attackera riddaren efter han har utfört en attack och sedan undvika nästa attack för att effektivt besegra riddaren.
+  Riddaren är långsammare än spelarkaraktären och besegras först efter två tunga attacker. 
+  Riddaren attackerar med en långsam attack liknande spelarens tunga attack.
+
+
 \end{enumerate}
 
 \subsubsection{Poäng}
@@ -96,51 +125,53 @@ Spelet kommer ha en simpel grafik med tydliga fiendertyper.
 
 2. Ha ett alternativ för att komma till en highscore lista som listar de 3 bästa highscoren.
 
-3. Vara visuellt tilltalande.
+\sout{3. Vara visuellt tilltalande.}
 \subsection{Spelkaraktär}
 \textbf{SKA:}
 
-4. Riktning av spelkaraktären styrs med tangenterna W, A, S, D.
+4. Spelarkaraktären kontrolleras enligt avsnitt 1.4 samt 1.5.2.
 
-5. Spelkaraktären har tre olika typer av attacker som kontrolleras med J, K, L.
+5. Spelarkaraktären har två olika typer av attacker som kontrolleras enligt tabellen i avsnitt 1.4.
 
-6. Ha olika visuella representation för de tre olika attackerna.
+6. Ha olika visuella representation för de olika attackerna.
 
-7. Spelkaraktären har total tre liv som representeras i form av hjärtan på skärmen.
+7. Spelarkaraktären har total tre liv som representeras i form av hjärtan på skärmen.
 
-8. Spelkaraktären tar ett livs skada vid kollision med fiende.
+8. Spelarkaraktären tar ett livs skada vid kollision med fiende.
 
-9. När spelkaraktären tar skada blir denne immun mot att ta mer skada i 2 sekunder. 
-
-10. Spelkaraktären ändrar färg när denne tar skada.
+9. När spelarkaraktären tar skada blir denne immun mot att ta mer skada i 2 sekunder. 
 
 11. När antal liv är slut avslutas spelet och en game over skärm visas.
 
 \textbf{BÖR:}
 
+5. Spelarkaraktären har tre olika typer av attacker som kontrolleras enligt tabellen i avsnitt 1.4.
+
+10. Spelarkaraktären ändrar färg när denne tar skada.
+
 12. Ha en viss chans att yttra ett ljud vid en attack. Olika attacker är kopplade till olika ljud. 10\% chans att producera ett ljud vid attack.
 
-13. Ha möjlighet att parera attacker.
+13. Spelarkaraktären ska kunna parera attacker genom att spelaren håller inne en tangent. Pareringen innebär att spelarkaraktären inte kan ta skada av fiendeattacker som sker från riktningen spelarakaraktären är vänd.
 
-14. Spelkaraktären ändrar färg under tiden denne är immun mot skada.
+14. Spelarkaraktären ändrar färg under tiden denne är immun mot skada.
 
-15. Visa en dödsanimering när spelkaraktären når 0 liv.
+15. Visa en dödsanimering när spelarkaraktären når 0 liv.
 \subsection{Fiender}
 \textbf{SKA:}
 
-16. Bönder och riddare följer spelkaraktären.
-
-17. Bönderna har två varianter av sitt vapen och vilket vapen de har är slumpgenererat.
-
-18 .Bönder och byfånar besegras och försvinner när spelkaraktären utför korrekt attack.
+16. Bönder och riddare följer spelarkaraktären.
 
 19. Riddare besegras och försvinner efter de träffats av två hårda attacker.
 
-20. Bönder och riddare fortsätter attackera spelkaraktären tills de är besegrade eller spelkaraktären dör.
-
-21. Byfånen skickas in, korsar hela spelplanen samt lämnar den på motsatt sida såvida spelkaraktären inte besegrar den. Även om byfånen skadar spelkaraktären fortsätter den på sin bestämda väg.
+20. Bönder och riddare fortsätter attackera spelarkaraktären tills de är besegrade eller spelarkaraktären dör.
 
 \textbf{BÖR:}
+
+17. Bönderna har två varianter av sitt vapen och vilket vapen de har är slumpgenererat.
+
+18. Bönder och byfånar besegras och försvinner när spelarkaraktären utför korrekt attack.
+
+21. Byfånen skickas in, korsar hela spelplanen samt lämnar den på motsatt sida såvida spelarkaraktären inte besegrar den. Även om byfånen skadar spelarkaraktären fortsätter den på sin bestämda väg.
 
 22. Implementera boss som sista fiende i spelet.
 
@@ -150,15 +181,15 @@ Spelet kommer ha en simpel grafik med tydliga fiendertyper.
 \subsection{Spelplan}
 \textbf{SKA:}
 
-25. Ha fasta barriärer spelkaraktären inte kan passera. 
+25. Ha fasta barriärer spelarkaraktären inte kan passera. 
 
 26. Fiender ska skickas in i bestämda tidsintervall.
 
-27. När en fiende besegras uppdateras highscore.
+27. När en fiende besegras uppdateras poängen.
 
-28. När spelaren förlorar visas en game over-skärm med spelarens highscore.
+28. När spelaren förlorar visas en game over-skärm med spelarens poängrekord.
 
-29. Vid vinst visas highscore samt en vinstskärm.
+29. Vid vinst visas poängrekord samt en vinstskärm.
 
 30. 2D-grafik.
 
@@ -170,7 +201,7 @@ Spelet kommer ha en simpel grafik med tydliga fiendertyper.
 
 33. Vid spelets start visas en sekvens där spelets bakgrundshistoria presenteras.
 
-34. Vid vinst visas en sekvens av vad som händer efter spelkaraktären besegrat hela byn.
+34. Vid vinst visas en sekvens av vad som händer efter spelarkaraktären besegrat hela byn.
 
 35. Inskickandet av fiender är delvis slumpgenererat.
 
