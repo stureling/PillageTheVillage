@@ -1,27 +1,24 @@
 #include "logic.h"
 
 //CONSTRUCTORS
-//ENTITY
-Entity::Entity( int hp, sf::Vector2f speed)
-    :speed{speed}, hp{hp}{}
+//CHARACTER
+Character::Character( int hp, sf::Vector2f speed, sf::RectangleShape hitbox)
+    :speed{speed}, hp{hp}, hitbox{hitbox}{}
 
 //PLAYER
-Player::Player(int hp, sf::Vector2f speed)
-    :Entity{hp, speed}{}
+Player::Player(int hp, sf::Vector2f speed, sf::RectangleShape hitbox)
+    :Character{hp, speed, hitbox}{}
 
 //ENEMY
-Enemy::Enemy(int hp, sf::Vector2f speed, std::map<char, bool> immunity)
-    :Entity{hp, speed}, immunity{immunity}{}
-
+Enemy::Enemy(int hp, sf::Vector2f speed, sf::RectangleShape hitbox, std::map<char, bool> immunity)
+    :Character{hp, speed, hitbox}, immunity{immunity}{}
 //KNIGHT
-Knight::Knight(int hp, sf::Vector2f speed)
-    :Enemy(hp, speed, k_immunity){}
-
-//SWORD
-//Sword::Sword()
+Knight::Knight(int hp, sf::Vector2f speed, sf::RectangleShape hitbox)
+    :Enemy(hp, speed, hitbox, immunity){}
 
 //FUNCIONS
 //PLAYER FUNCTIONS
+
 void Player::attack_light()
 {
     
@@ -33,26 +30,48 @@ void Player::attack_heavy()
 void Player::jump()
 {
 
-};
+}
+
+void Player::update(sf::Keyboard::Key code, std::vector<Character*> Enemy)
+{
+    if (code == sf::Keyboard::D && getPosition().x < 600.f)
+    {
+        setScale(sf::Vector2f{0.3f, 0.3f});
+        move(speed);
+    }
+    if (code == sf::Keyboard::A && getPosition().x > 0.f)
+    {
+        setScale(sf::Vector2f{-0.3f, 0.3f});
+        move(-speed);
+    }
+    hit(Enemy);
+}
+
+void Player::hit(std::vector<Character*> Enemy)
+{
+    for (Character* c : Enemy) {
+        if (getGlobalBounds().intersects(c->getGlobalBounds())) {
+            std::cout<<"Collision"<<std::endl;
+        }
+    }
+}
 
 //ENEMY FUNCTIONS
 
-/*void Enemy::resolve_hit()
+void Enemy::resolve_hit()
 {
 
-}*/
+}
 
-void Enemy::update(sf::Vector2f player_pos, sf::Time tick)
+void Enemy::update(sf::Vector2f player_pos)
 {
     if (player_pos.x > this->getPosition().x)
     {
-        this->setScale(sf::Vector2f(0.3f, 0.3f));
-        this->move(speed * tick.asSeconds());
+        this->move(this->speed);
     }
     else
     {
-        this->setScale(sf::Vector2f(-0.3f, 0.3f));
-        this->move(-speed * tick.asSeconds());
+        //this->move(-this->speed);
     }
 
 }
@@ -64,64 +83,52 @@ bool Enemy::valid_hit()
 
 
 //GAME STATES
-int PlayState()
-{
+int PlayState() {
     sf::RenderWindow window{sf::VideoMode(960, 480), "Hang in there, bud."};
     sf::Texture background_tex;
     sf::Texture player_tex;
-    sf::Texture enemy_tex;
-    
-    
+    sf::RectangleShape hitbox{sf::Vector2f{50.0, 50.0}};
+
     std::map<char, bool> m{{'c', true}};
-    Player p(3, sf::Vector2f{4.f, 0.f});   
-    p.setOrigin(280.f, 0.f);
-    Enemy e(3, sf::Vector2f{2.f, 0.f}, m);   
-    e.setOrigin(280.f, 0.f);
-    p.setPosition(sf::Vector2f{50.f, 60.f});
-    e.setPosition(sf::Vector2f{700.f, 300.f});
+    Player p(3, sf::Vector2f{4.f, 0.f}, hitbox);
+    p.setOrigin(386.f, 0.f);
+    Enemy e(3, sf::Vector2f{2.f, 0.f}, hitbox, m);
+    Enemy e1(3, sf::Vector2f{2.f, 0.f}, hitbox, m);
+    std::vector<Character*> enemies{};
+    enemies.push_back(&e);
+    enemies.push_back(&e1);
+    p.setPosition(sf::Vector2f{600.f, 300.f});
+    e.setPosition(sf::Vector2f{200.f, 300.f});
+    e1.setPosition(sf::Vector2f{250.f, 300.f});
 
     //Load and set textures
     player_tex.loadFromFile("static/textures/player.png");
-    enemy_tex.loadFromFile("static/textures/peasant.png");
     p.setTexture(player_tex);
-    e.setTexture(enemy_tex);
-    p.setScale(sf::Vector2f{0.25f, 0.25f});
-    e.setScale(sf::Vector2f{0.25f, 0.25f});
+    e.setTexture(player_tex);
+    e1.setTexture(player_tex);
+    p.setScale(sf::Vector2f{0.3f, 0.3f});
+    e.setScale(sf::Vector2f{0.3f, 0.3f});
+    e1.setScale(sf::Vector2f{0.3f, 0.3f});
+
     window.setVerticalSyncEnabled(true);
-    window.setKeyRepeatEnabled(false);
-    sf::Clock global_clock{};
-    while(window.isOpen())
-    {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && p.getPosition().x < 900.f)
-        {
-            p.setScale(sf::Vector2f{0.25f, 0.25f});
-            p.move(p.speed * global_clock.getElapsedTime().asSeconds());
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && p.getGlobalBounds().left > 0.f)
-        {
-            p.setScale(sf::Vector2f{-0.25f, 0.25f});
-            p.move(-p.speed * global_clock.getElapsedTime().asSeconds());
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
-        {
-            sf::Thread thread(&Player::attack_light, &p);
-            thread.launch();
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-        {
+    sf::Event event;
+    while (window.isOpen()) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
             window.close();
         }
-
-        e.update(p.getPosition(), global_clock.getElapsedTime());
+        //sf::sleep(sf::seconds(2));
+        e.update(p.getPosition());
+        e1.update(p.getPosition());
+        p.update(event.key.code, enemies);
         window.clear();
         window.draw(p);
         window.draw(e);
+        window.draw(e1);
         window.display();
-        std::cout << p.getGlobalBounds().left << std::endl;
     }
-    return 1; 
 
-};
+    return 1;
+}
 
 void MenuState()
 {
@@ -141,7 +148,8 @@ std::map<char, int> Knight{
     {'w', true},
     {'s', false}
 };
-std::map<char, int> Peasant{
+/*std::map<char, int> Peasant{
     {'w', false},
     {'s', false}
 };
+*/

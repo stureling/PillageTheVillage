@@ -12,41 +12,43 @@
        
 }*/
 
-class Entity : public sf::Sprite
+class Character : public sf::Sprite
 {
     public:
-        Entity(int hp, sf::Vector2f speed);
-        //virtual void timed_move();
-        //virtual void resolve_hit();
+        Character(int hp, sf::Vector2f speed, sf::RectangleShape hitbox);
         sf::Vector2f const speed; 
     protected:
         int hp;
+        sf::RectangleShape hitbox;
 };
-class Player : public Entity
+class Player : public Character
 {
     public:
-        Player(int hp, sf::Vector2f speed);
-        //void timed_move() override;
+        Player(int hp, sf::Vector2f speed, 
+                sf::RectangleShape hitbox);
+        void update(sf::Keyboard::Key code, std::vector<Character*> Enemy);
         void attack_light();
         void attack_heavy();
         void jump();
+        void hit(std::vector<Character*> Enemy);
 };
 
-class Enemy : public Entity
+class Enemy : public Character
 {
     public:
-        Enemy(int hp, sf::Vector2f speed, std::map<char, bool> immunity);
-        //void resolve_hit() override;
-        virtual void update(sf::Vector2f player_pos, sf::Time tick);
+        Enemy(int hp, sf::Vector2f speed, sf::RectangleShape hitbox, std::map<char, bool> immunity);
+        void resolve_hit();
+        virtual void update(sf::Vector2f player_pos);
     protected:
         std::map<char, bool> immunity;
         bool valid_hit();
+
 };
 
 class Knight : public Enemy
 {
     public:
-        Knight(int hp, sf::Vector2f speed);
+        Knight(int hp, sf::Vector2f speed, sf::RectangleShape hitbox);
         void attack();  
     private:
     std::map<char, bool> k_immunity
@@ -54,13 +56,7 @@ class Knight : public Enemy
     {'w', true},
     {'s', false}
     };
-};
-class Sword : public Entity
-{
-    public:
-
-    private:
-
+        
 };
 /*
 class Peasant : public Enemy
