@@ -26,9 +26,11 @@ class Player : public Character
     public:
         Player(int hp, sf::Vector2f speed, 
                 sf::RectangleShape hitbox);
+        void update(sf::Keyboard::Key code, std::vector<Character*> Enemy);
         void attack_light();
         void attack_heavy();
         void jump();
+        void hit(std::vector<Character*> Enemy);
 };
 
 class Enemy : public Character
