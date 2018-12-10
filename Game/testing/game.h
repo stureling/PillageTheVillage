@@ -17,24 +17,11 @@ class Entity : public sf::Sprite
 {
     public:
         Entity(int hp, sf::Vector2f speed);
-        virtual void update(sf::Time tick) = 0;
+        //virtual void update(sf::Time tick) = 0;
         //virtual void resolve_hit() = 0;
     protected:
         int hp;
         sf::Vector2f const speed; 
-};
-class Player : public Entity
-{
-    public:
-        Player(int hp, sf::Vector2f speed, sf::Texture &texture);
-        void player_update(sf::Time time, sf::Event &event_queue, sf::Window &window);
-        ~Player();
-        void update(sf::Time time) override;
-        //void attack_light();
-        //void attack_heavy();
-        //void jump();
-    private:
-        //bool is_attacking;
 };
 class Sword : public Entity
 {
@@ -51,10 +38,23 @@ class Enemy : public Entity
     public:
         Enemy(int hp, sf::Vector2f speed);
         //void resolve_hit() override;
-        virtual void update(sf::Vector2f player_pos, sf::Time tick);
+        void update(sf::Vector2f player_pos, sf::Time tick);
         sf::Vector2f getPlayerPos();
     protected:
         bool valid_hit();
+};
+class Player : public Entity
+{
+    public:
+        Player(int hp, sf::Vector2f speed, sf::Texture &texture);
+        void player_update(sf::Time time, sf::Event &event_queue, sf::Window &window);
+        ~Player();
+        void hit(std::vector<Enemy*> Enemy);
+        //void attack_light();
+        //void attack_heavy();
+        //void jump();
+    private:
+        //bool is_attacking;
 };
 
 class Knight : public Enemy
@@ -74,20 +74,20 @@ class Knight : public Enemy
 class Peasant : public Enemy
 {
     public:
-        Peasant();
+        Peasant(sf::Vector2f speed);
 };
 
 class PlayState
 {
     public:
         PlayState();
-        void addEnemy(Entity* entity);
-        void addPlayer(Player* player);
+        void addEnemy(Enemy* entity);
+        void setPlayer(Player* player);
         void update(sf::Time time, 
                 sf::Event &event, 
                 sf::Window &window);
     private:
-        std::vector<Entity*> enemies;
+        std::vector<Enemy*> enemies;
         Player* player;
 };
 #endif
