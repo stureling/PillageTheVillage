@@ -50,8 +50,14 @@ void Player::update(sf::Keyboard::Key code, std::vector<Character*> Enemy)
 void Player::hit(std::vector<Character*> Enemy)
 {
     for (Character* c : Enemy) {
-        if (getGlobalBounds().intersects(c->getGlobalBounds())) {
-            std::cout<<"Collision"<<std::endl;
+        if (getGlobalBounds().intersects(c->getGlobalBounds()) && c->getPosition().x < getPosition().x) {
+            move(10.f, 0.f);
+            c->move(-20.f, 0.f);
+        }
+        else if(getGlobalBounds().intersects(c->getGlobalBounds()) && c->getPosition().x > getPosition().x)
+        {
+            move(-10.f, 0.f);
+            c->move(20.f, 0.f);
         }
     }
 }
@@ -71,7 +77,8 @@ void Enemy::update(sf::Vector2f player_pos)
     }
     else
     {
-        //this->move(-this->speed);
+        this->move(-this->speed);
+        setScale(sf::Vector2f{-0.3f, 0.3f});
     }
 
 }
@@ -87,6 +94,8 @@ int PlayState() {
     sf::RenderWindow window{sf::VideoMode(960, 480), "Hang in there, bud."};
     sf::Texture background_tex;
     sf::Texture player_tex;
+    sf::Texture knight_tex;
+    sf::Texture peasant_tex;
     sf::RectangleShape hitbox{sf::Vector2f{50.0, 50.0}};
 
     std::map<char, bool> m{{'c', true}};
@@ -97,15 +106,17 @@ int PlayState() {
     std::vector<Character*> enemies{};
     enemies.push_back(&e);
     enemies.push_back(&e1);
-    p.setPosition(sf::Vector2f{600.f, 300.f});
-    e.setPosition(sf::Vector2f{200.f, 300.f});
-    e1.setPosition(sf::Vector2f{250.f, 300.f});
+    p.setPosition(sf::Vector2f{400.f, 300.f});
+    e.setPosition(sf::Vector2f{200.f, 330.f});
+    e1.setPosition(sf::Vector2f{600.f, 300.f});
 
     //Load and set textures
     player_tex.loadFromFile("static/textures/player.png");
+    knight_tex.loadFromFile("static/textures/knight.png");
+    peasant_tex.loadFromFile("static/textures/peasant.png");
     p.setTexture(player_tex);
-    e.setTexture(player_tex);
-    e1.setTexture(player_tex);
+    e.setTexture(peasant_tex);
+    e1.setTexture(knight_tex);
     p.setScale(sf::Vector2f{0.3f, 0.3f});
     e.setScale(sf::Vector2f{0.3f, 0.3f});
     e1.setScale(sf::Vector2f{0.3f, 0.3f});
