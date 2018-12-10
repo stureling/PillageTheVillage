@@ -27,7 +27,9 @@ class Player : public Entity
 {
     public:
         Player(int hp, sf::Vector2f speed, sf::Texture &texture);
-        void update(sf::Time tick);
+        void player_update(sf::Time time, sf::Event &event_queue, sf::Window &window);
+        ~Player();
+        void update(sf::Time time) override;
         //void attack_light();
         //void attack_heavy();
         //void jump();
@@ -37,8 +39,10 @@ class Player : public Entity
 class Sword : public Entity
 {
     public:
+        void update(sf::Time tick);
 
     private:
+        bool attack_mode;
 
 };
 
@@ -78,10 +82,12 @@ class PlayState
     public:
         PlayState();
         void addEnemy(Entity* entity);
-        void addPlayer(Entity* player);
-        void update(sf::Time tick);
+        void addPlayer(Player* player);
+        void update(sf::Time time, 
+                sf::Event &event, 
+                sf::Window &window);
     private:
         std::vector<Entity*> enemies;
-        Entity* player;
+        Player* player;
 };
 #endif
