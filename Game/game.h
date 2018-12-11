@@ -39,7 +39,6 @@ class Enemy : public Entity
         Enemy(int hp, sf::Vector2f speed);
         //void resolve_hit() override;
         void update(sf::Vector2f player_pos, sf::Time tick);
-        sf::Vector2f getPlayerPos();
     protected:
         bool valid_hit();
 };
@@ -47,8 +46,8 @@ class Player : public Entity
 {
     public:
         Player(int hp, sf::Vector2f speed, sf::Texture &texture);
-        void player_update(sf::Time time, sf::Event &event_queue, sf::Window &window);
-        ~Player();
+        void player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window);
+        ~Player() override;
         void hit(std::vector<Enemy*> Enemy);
         //void attack_light();
         //void attack_heavy();
@@ -85,7 +84,7 @@ class PlayState
         void setPlayer(Player* player);
         void update(sf::Time time, 
                 sf::Event &event, 
-                sf::Window &window);
+                sf::RenderWindow &window);
     private:
         std::vector<Enemy*> enemies;
         Player* player;

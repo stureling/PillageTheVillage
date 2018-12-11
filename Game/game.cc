@@ -10,7 +10,7 @@ Player::Player(int hp, sf::Vector2f speed, sf::Texture &texture)
         setTexture(texture);
     }
 
-Player::~Player(){}
+Player::~Player() = default;
 
 //ENEMY
 Enemy::Enemy(int hp, sf::Vector2f speed)
@@ -25,7 +25,7 @@ Knight::Knight(int hp, sf::Vector2f speed)
     :Enemy{hp, speed}{}
 
 //PLAYSTATE
-PlayState::PlayState(){}
+PlayState::PlayState() = default;
 
 
 //FUNCTIONS
@@ -63,7 +63,7 @@ void Player::hit(std::vector<Enemy*> Enemy)
     } 
 }
 
-void Player::player_update(sf::Time time, sf::Event &event_queue, sf::Window &window)
+void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window)
 {
     while (window.pollEvent(event_queue))
     {
@@ -82,7 +82,7 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::Window &wi
         }
 
         if ((event_queue.type == sf::Event::KeyPressed) 
-                && (event_queue.key.code == sf::Keyboard::Space) 
+                && (event_queue.key.code == sf::Keyboard::Q)
                 && getPosition().y == 200.f)
         {
             window.close();
@@ -103,13 +103,16 @@ void PlayState::setPlayer(Player* entity)
 
 void PlayState::update(sf::Time time, 
         sf::Event &event, 
-        sf::Window &window)
+        sf::RenderWindow &window)
 {
+    window.clear(sf::Color(0, 200, 0, 255));
     for( Enemy* e : enemies )
     {
         e->update(player->getPosition(), time);
+        window.draw(*e);
     }
     player->player_update(time, event, window);
+    window.draw(*player);
     player->hit(enemies);
 }
 
@@ -130,12 +133,12 @@ int main()
     p.setScale(sf::Vector2f{0.3f, 0.3f});
     p.setOrigin(sf::Vector2f{386.f, 0.f});
     
-    Peasant e{sf::Vector2f{20.f, 0.f}};
+    Peasant e{sf::Vector2f{50.f, 0.f}};
     e.setTexture(peasant_t);
     e.setPosition(sf::Vector2f{600.f, 200.f});
     e.setScale(sf::Vector2f{0.3f, 0.3f});
 
-    Knight k{3, sf::Vector2f{20.f, 0.f}};
+    Knight k{3, sf::Vector2f{30.f, 0.f}};
     k.setTexture(knight_t);
     k.setPosition(sf::Vector2f{0.f, 200.f});
     k.setScale(sf::Vector2f{0.3f, 0.3f});
@@ -147,16 +150,12 @@ int main()
     playstate.addEnemy(&e);
     playstate.addEnemy(&k);
     sf::Clock clock;
-    sf::Event event;
+    sf::Event event{};
     window.setVerticalSyncEnabled(true);
     while(window.isOpen())
     {
         sf::Time elapsed = clock.restart();
         playstate.update(elapsed, event, window);
-        window.clear(sf::Color(0, 200, 0, 255));
-        window.draw(p);
-        window.draw(e);
-        window.draw(k);
         window.display();
     }
 }
