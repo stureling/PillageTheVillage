@@ -23,15 +23,6 @@ class Entity : public sf::Sprite
         sf::Vector2f const speed; 
         int hp;
 };
-class Sword : public Entity
-{
-    public:
-        void update(sf::Time tick);
-
-    private:
-        bool attack_mode;
-
-};
 
 class Enemy : public Entity
 {
@@ -42,18 +33,30 @@ class Enemy : public Entity
     protected:
         bool valid_hit();
 };
+
+class Sword : public sf::Sprite
+{
+    public:
+        Sword();
+        void update(sf::Time tick, std::vector<Enemy*> enemies);
+        void light_attack();
+        void heavy_attack();
+    private:
+        bool attack_mode;
+
+};
+
 class Player : public Entity
 {
     public:
-        Player(int hp, sf::Vector2f speed, sf::Texture &texture);
+        Player(int hp, sf::Vector2f speed, sf::Texture &player_t, sf::Texture &sword_t);
         void player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window);
+        void move_player(sf::Vector2f, sf::Time tick);
         ~Player() override;
         void hit(std::vector<Enemy*> Enemy);
-        //void attack_light();
-        //void attack_heavy();
         //void jump();
     private:
-        //bool is_attacking;
+        Sword sword;
 };
 
 class Knight : public Enemy

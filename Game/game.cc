@@ -4,10 +4,20 @@
 Entity::Entity(int hp, sf::Vector2f speed)
     :speed{speed}, hp{hp}{}
 
+//SWORD
+Sword::Sword()
+{
+    setOrigin(sf::Vector2f{15.f, 336.f});
+}
+
 //PLAYER
-Player::Player(int hp, sf::Vector2f speed, sf::Texture &texture)
+Player::Player(int hp, sf::Vector2f speed, sf::Texture &player_t, sf::Texture &sword_t)
     :Entity(hp, speed){
-        setTexture(texture);
+        setTexture(player_t);
+        setScale(sf::Vector2f{0.3f, 0.3f});
+        sword.setTexture(sword_t);
+        sword.setScale(sf::Vector2f{0.3f, 0.3f});
+        
     }
 
 Player::~Player() = default;
@@ -48,19 +58,38 @@ void Enemy::update(sf::Vector2f player_pos, sf::Time tick)
 
 void Player::hit(std::vector<Enemy*> Enemy)
 {
+    sf::Time t = sf::seconds(1.f);
     for (Entity* c : Enemy) 
     { 
         if (getGlobalBounds().intersects(c->getGlobalBounds()) 
                 && c->getPosition().x < getPosition().x) 
         { 
-            move(10.f, 0.f); c->move(-20.f, 0.f); 
+            move_player(sf::Vector2f{10.f, 0.f}, t); 
+            c->move(-20.f, 0.f); 
         } 
         else if(getGlobalBounds().intersects(c->getGlobalBounds()) 
                 && c->getPosition().x > getPosition().x) 
         { 
-            move(-10.f, 0.f); c->move(20.f, 0.f); 
+            move_player(sf::Vector2f{-10.f, 0.f}, t); 
+            c->move(20.f, 0.f); 
         } 
     } 
+}
+
+void Player::move_player(sf::Vector2f speed, sf::Time tick)
+{
+    if ( speed.x > 0.f )
+    {
+        move(speed * tick.asSeconds());
+
+        sword.setPosition(sf::Vector2f{getPosition().x + (526.f * 0.09f), getPosition().y + (290 * 0.3f)});
+    }
+    else
+    {
+        move(speed * tick.asSeconds());
+
+        sword.setPosition(sf::Vector2f{getPosition().x - (526.f * 0.09f), getPosition().y + (290 * 0.3f)});
+    }
 }
 
 void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window)
@@ -70,25 +99,40 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
         if ((event_queue.type == sf::Event::KeyPressed) 
                 && (event_queue.key.code == sf::Keyboard::A))
         {
+            move_player(-speed, time);
             setScale(sf::Vector2f(-0.3f, 0.3f));
-            move(-speed * time.asSeconds());
+            sword.setScale(sf::Vector2f(-0.3f, 0.3f));
         }
 
-        if ((event_queue.type == sf::Event::KeyPressed) 
+        else if ((event_queue.type == sf::Event::KeyPressed) 
                 && (event_queue.key.code == sf::Keyboard::D))
         {
+            move_player(speed, time);
             setScale(sf::Vector2f(0.3f, 0.3f));
-            move(speed * time.asSeconds());
+            sword.setScale(sf::Vector2f(0.3f, 0.3f));
         }
 
-        if ((event_queue.type == sf::Event::KeyPressed) 
+        else if ((event_queue.type == sf::Event::KeyPressed) 
                 && (event_queue.key.code == sf::Keyboard::Q)
                 && getPosition().y == 200.f)
         {
             window.close();
         }
+        else if ((event_queue.type == sf::Event::KeyPressed) 
+                && (event_queue.key.code == sf::Keyboard::J))
+        {
+            std::cout << "Light attack" << std::endl; 
+        }
+        else if ((event_queue.type == sf::Event::KeyPressed) 
+                && (event_queue.key.code == sf::Keyboard::K))
+        {
+            std::cout << "Heavy attack" << std::endl; 
+        }
     }
+    window.draw(sword);
 }
+
+//SWORD FUNCTIONS
 
 //PLAYSTATE FUNCTIONS
 
@@ -123,14 +167,14 @@ int main()
     sf::RenderWindow window(sf::VideoMode(960,480), "Hang in there, bud");
 
     //Load and set textures, scale and position
-    sf::Texture player_t, peasant_t, knight_t;
+    sf::Texture player_t, peasant_t, knight_t, sword_t;
     player_t.loadFromFile("static/textures/player.png");
     peasant_t.loadFromFile("static/textures/peasant.png");
     knight_t.loadFromFile("static/textures/knight.png");
+    sword_t.loadFromFile("static/textures/Sword-1.png");
 
-    Player p{3, sf::Vector2f{1000.f, 0.f}, player_t};
+    Player p{3, sf::Vector2f{1000.f, 0.f}, player_t, sword_t};
     p.setPosition(sf::Vector2f{200.f, 200.f});
-    p.setScale(sf::Vector2f{0.3f, 0.3f});
     p.setOrigin(sf::Vector2f{386.f, 0.f});
     
     Peasant e{sf::Vector2f{50.f, 0.f}};
