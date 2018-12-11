@@ -196,6 +196,8 @@ INPUT /usr/share/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlib
 INPUT /usr/share/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopaths.code.tex
 INPUT /usr/share/texmf-dist/tex/latex/parskip/parskip.sty
 INPUT /usr/share/texmf-dist/tex/latex/parskip/parskip.sty
+INPUT /usr/share/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+INPUT /usr/share/texmf-dist/tex/latex/etoolbox/etoolbox.sty
 INPUT /usr/share/texmf-dist/tex/generic/babel/babel.sty
 INPUT /usr/share/texmf-dist/tex/generic/babel/babel.sty
 INPUT /usr/share/texmf-dist/tex/generic/babel/switch.def

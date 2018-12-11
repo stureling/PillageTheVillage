@@ -121,9 +121,9 @@ int main()
 
     //Load and set textures, scale and position
     sf::Texture player_t, peasant_t, knight_t;
-    player_t.loadFromFile("../static/textures/player.png");
-    peasant_t.loadFromFile("../static/textures/peasant.png");
-    knight_t.loadFromFile("../static/textures/knight.png");
+    player_t.loadFromFile("static/textures/player.png");
+    peasant_t.loadFromFile("static/textures/peasant.png");
+    knight_t.loadFromFile("static/textures/knight.png");
 
     Player p{3, sf::Vector2f{1000.f, 0.f}, player_t};
     p.setPosition(sf::Vector2f{200.f, 200.f});

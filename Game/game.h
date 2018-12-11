@@ -8,7 +8,7 @@
 {
     public:
         sf::Sprite background;
-        //std::map<sf::Time, std::list<Enemy> waves;
+        //std::map<sf::Time, std::vector<Enemy> waves;
        
 }*/
 
@@ -20,8 +20,8 @@ class Entity : public sf::Sprite
         //virtual void update(sf::Time tick) = 0;
         //virtual void resolve_hit() = 0;
     protected:
-        int hp;
         sf::Vector2f const speed; 
+        int hp;
 };
 class Sword : public Entity
 {
