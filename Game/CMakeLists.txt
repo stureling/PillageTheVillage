@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.10.2)
 project(Game)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -16,7 +16,7 @@ if (DEFINED ENV{LOADEDMODULES} AND ("$ENV{LOADEDMODULES}" MATCHES ".*prog/gcc/6.
     endif()
 endif()
 
-set(SFML_MODULES network graphics window system)
+set(SFML_MODULES graphics window system)
 find_package(SFML 2 COMPONENTS ${SFML_MODULES})
 include_directories(${SFML_INCLUDE_DIR})
 if (NOT (${SFML_FOUND} STREQUAL "TRUE"))
