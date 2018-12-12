@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(Village_Pillage)
+project(VillagePillage)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -33,8 +33,7 @@ if (NOT (${SFML_FOUND} STREQUAL "TRUE"))
     endforeach(i)
 endif()
 
-add_executable(Village_Pillage
-        game.cc
-        game.h)
+add_executable(VillagePillage
+    main.cc)
 
-target_link_libraries(Village_Pillage ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
+target_link_libraries(VillagePillage ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})

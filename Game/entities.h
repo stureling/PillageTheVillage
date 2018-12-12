@@ -1,7 +1,5 @@
-#ifndef LOGIC_H
-#define LOGIC_H
-#include <vector>
-#include <map>
+#ifndef ENTITIES_H
+#define ENTITIES_H
 #include <SFML/Graphics.hpp>
 #include <iostream>
 /*class Playfield
@@ -28,7 +26,7 @@ class Enemy : public Entity
 {
     public:
         Enemy(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
-        //void resolve_hit() override;
+        void hit(char attack_type);
         void update(sf::Vector2f player_pos, sf::Time tick);
     protected:
         bool valid_hit();
@@ -37,13 +35,15 @@ class Enemy : public Entity
 class Sword : public sf::Sprite
 {
     friend class Player;
+    friend class Knight;
     public:
-        Sword();
-        void update(sf::Time tick, std::vector<Enemy*>* enemies);
+        Sword(sf::Vector2f scale, sf::Texture* texture);
+        void update(sf::Time tick, std::vector<Enemy*>* enemies, Sprite* holder);
         void light_attack();
         void heavy_attack();
     private:
         int attack_mode;
+        sf::Clock timer;
 
 };
 
@@ -52,12 +52,13 @@ class Player : public Entity
     public:
         Player(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture* player_t, sf::Texture* sword_t);
         void player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window, std::vector<Enemy*> &enemies);
-        void move_player(sf::Vector2f, sf::Time tick);
         ~Player() override;
         void hit(std::vector<Enemy*> Enemy);
         //void jump();
     private:
         Sword sword;
+        sf::Clock timer;
+
 };
 
 class Knight : public Enemy
@@ -80,17 +81,4 @@ class Peasant : public Enemy
         Peasant(sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
 };
 
-class PlayState
-{
-    public:
-        PlayState();
-        void addEnemy(Enemy* entity);
-        void setPlayer(Player* player);
-        void update(sf::Time time, 
-                sf::Event &event, 
-                sf::RenderWindow &window);
-    private:
-        std::vector<Enemy*> enemies;
-        Player* player;
-};
 #endif
