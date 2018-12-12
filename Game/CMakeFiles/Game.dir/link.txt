@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=c++14   CMakeFiles/Game.dir/game.cc.o  -o Game /usr/lib/libsfml-network.so.2.5.1 /usr/lib/libsfml-graphics.so.2.5.1 /usr/lib/libsfml-window.so.2.5.1 /usr/lib/libsfml-system.so.2.5.1 
