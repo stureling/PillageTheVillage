@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/eric/courses/TDP005/Game/game.cc
+game.h
+/home/eric/courses/TDP005/Game/game.h
+
+/home/eric/courses/TDP005/Game/game.h
+vector
+-
+map
+-
+SFML/Graphics.hpp
+-
+iostream
+-
+
