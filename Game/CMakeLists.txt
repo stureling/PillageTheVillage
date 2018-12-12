@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 3.10.2)
-project(Game)
+project(Village_Pillage)
 
 set(CMAKE_CXX_STANDARD 14)
 
 include_directories(.)
-
-cmake_minimum_required(VERSION 3.13)
-project(game)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 if (DEFINED ENV{LOADEDMODULES} AND ("$ENV{LOADEDMODULES}" MATCHES ".*prog/gcc/6.1.0.*"))
@@ -25,7 +22,7 @@ if (NOT (${SFML_FOUND} STREQUAL "TRUE"))
         list(APPEND SFML_LIBRARIES "sfml-${i}")
     endforeach(i)
 endif()
-add_executable(Game
+add_executable(Village_Pillage
         game.cc
         game.h)
-target_link_libraries(Game ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
+target_link_libraries(Village_Pillage ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
