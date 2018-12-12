@@ -155,7 +155,7 @@ void Sword::update(sf::Time tick, std::vector<Enemy*>* enemies, sf::Sprite* hold
     {
         if (attack_mode == 1)
         {
-            if (getRotation() < 45 )
+            if (getRotation() < 45  || getRotation() > 90)
             {
                  rotate(1000 * tick.asSeconds());
             }
@@ -177,7 +177,7 @@ void Sword::update(sf::Time tick, std::vector<Enemy*>* enemies, sf::Sprite* hold
         {
 
         }
-        else if (attack_mode == 3 && getRotation() > 0)
+        else if (attack_mode == 3 && getRotation() > 0 && getRotation() < 90)
         {
              rotate(-1000 * tick.asSeconds());
         }
