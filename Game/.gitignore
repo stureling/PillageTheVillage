@@ -1,5 +1,4 @@
-Cmakefiles/*
-Cmakefiles
+CMakeFiles
 CMakeCache.txt
 Game
 Makefile

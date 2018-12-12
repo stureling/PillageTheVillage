@@ -1,3 +1,0 @@
-/home/eric/school/TDP005/Game/CMakeFiles/rebuild_cache.dir
-/home/eric/school/TDP005/Game/CMakeFiles/Game.dir
-/home/eric/school/TDP005/Game/CMakeFiles/edit_cache.dir
