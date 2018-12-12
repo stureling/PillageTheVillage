@@ -16,7 +16,7 @@
 class Entity : public sf::Sprite
 {
     public:
-        Entity(int hp, sf::Vector2f speed);
+        Entity(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
         //virtual void update(sf::Time tick) = 0;
         //virtual void resolve_hit() = 0;
     protected:
@@ -27,7 +27,7 @@ class Entity : public sf::Sprite
 class Enemy : public Entity
 {
     public:
-        Enemy(int hp, sf::Vector2f speed);
+        Enemy(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
         //void resolve_hit() override;
         void update(sf::Vector2f player_pos, sf::Time tick);
     protected:
@@ -36,21 +36,22 @@ class Enemy : public Entity
 
 class Sword : public sf::Sprite
 {
+    friend class Player;
     public:
         Sword();
-        void update(sf::Time tick, std::vector<Enemy*> enemies);
+        void update(sf::Time tick, std::vector<Enemy*>* enemies);
         void light_attack();
         void heavy_attack();
     private:
-        bool attack_mode;
+        int attack_mode;
 
 };
 
 class Player : public Entity
 {
     public:
-        Player(int hp, sf::Vector2f speed, sf::Texture &player_t, sf::Texture &sword_t);
-        void player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window);
+        Player(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture* player_t, sf::Texture* sword_t);
+        void player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window, std::vector<Enemy*> &enemies);
         void move_player(sf::Vector2f, sf::Time tick);
         ~Player() override;
         void hit(std::vector<Enemy*> Enemy);
@@ -62,7 +63,7 @@ class Player : public Entity
 class Knight : public Enemy
 {
     public:
-        Knight(int hp, sf::Vector2f speed);
+        Knight(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
         void attack();  
     private:
     std::map<char, bool> k_immunity
@@ -76,7 +77,7 @@ class Knight : public Enemy
 class Peasant : public Enemy
 {
     public:
-        Peasant(sf::Vector2f speed);
+        Peasant(sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
 };
 
 class PlayState
