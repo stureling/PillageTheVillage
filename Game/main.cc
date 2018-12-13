@@ -1,5 +1,4 @@
 #include "entities.cc"
-#include <iterator>
 
 using namespace std;
 
@@ -39,7 +38,7 @@ void PlayState::update(sf::Time time,
     for(vector<Enemy*>::iterator it = enemies.begin(); it != enemies.end(); it++)
     {
         Enemy* e = *it;
-        e->update(player->getPosition(), time);
+        //e->update(player->getPosition(), time);
         if (e->get_hp() <= 0)
         {
             enemies.erase(it);

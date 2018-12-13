@@ -115,7 +115,6 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
         {
             std::cout << "Light attack" << std::endl;
             sword.attack_mode = 1;
-            sword.timer.restart();
         }
         else if ((event_queue.type == sf::Event::KeyPressed) 
                 && (event_queue.key.code == sf::Keyboard::K)
@@ -123,6 +122,7 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
         {
             std::cout << "Heavy attack" << std::endl; 
             sword.attack_mode = 2;
+            sword.timer.restart();
         }
     }
     //Movement has to be outside events to be smooth
@@ -139,7 +139,7 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
     }
 
     sword.update(time, &enemies, this);
-
+    hit(enemies);
     window.draw(sword);
     window.draw(*this);
 }
@@ -164,7 +164,7 @@ void Sword::update(sf::Time tick, std::vector<Enemy*>* enemies, sf::Sprite* hold
     {
         if (attack_mode == 1)
         {
-            if (getRotation() < 45  || getRotation() > 90)
+            if (getRotation() < 45  || getRotation() > 315)
             {
                  rotate(1000 * tick.asSeconds() * orientation);
             }
@@ -184,19 +184,26 @@ void Sword::update(sf::Time tick, std::vector<Enemy*>* enemies, sf::Sprite* hold
         }
         else if (attack_mode == 2)
         {
-            attack_mode = 3;
+            if (timer.getElapsedTime().asSeconds() < 0.5f)
+            {
 
+            }
+            if (timer.getElapsedTime().asSeconds() > 0.5f && timer.getElapsedTime().asSeconds() < 1.f)
+            {
+                setPosition(getPosition().x, getPosition().y);
+            }
         }
-        else if (attack_mode == 3 && getRotation() > 0 && getRotation() < 90)
+        else if ((attack_mode == 3 && getRotation() > 10 && getRotation() < 180) ||
+                (attack_mode == 3 && getRotation() > 180 && getRotation() < 350))
         {
-             rotate(-1000 * tick.asSeconds());
+             rotate(-1000 * tick.asSeconds() * orientation);
         }
         else
         {
+            setRotation(0);
             attack_mode = 0;
         }
-        
-
+        std::cout << getRotation() << std::endl;
     }
 
 }
