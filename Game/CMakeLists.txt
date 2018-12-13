@@ -1,11 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(VillagePillage)
 
-set(CMAKE_CXX_STANDARD 17)
-
-include_directories(.)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 ")
 
 if (DEFINED ENV{LOADEDMODULES} AND ("$ENV{LOADEDMODULES}" MATCHES ".*prog/gcc/6.1.0.*"))
     set(CMAKE_CXX_COMPILER /sw/gcc-6.1.0/bin/g++)
@@ -26,6 +22,7 @@ endif()
 set(SFML_MODULES graphics window system)
 find_package(SFML 2 COMPONENTS ${SFML_MODULES})
 include_directories(${SFML_INCLUDE_DIR})
+
 if (NOT (${SFML_FOUND} STREQUAL "TRUE"))
     set(SFML_LIBRARIES "")
     foreach(i ${SFML_MODULES})
@@ -33,7 +30,7 @@ if (NOT (${SFML_FOUND} STREQUAL "TRUE"))
     endforeach(i)
 endif()
 
-add_executable(VillagePillage
-    main.cc)
+set(SOURCE_FILES main.cc)
+add_executable(VillagePillage ${SOURCE_FILES})
 
 target_link_libraries(VillagePillage ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
