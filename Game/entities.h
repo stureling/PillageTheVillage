@@ -27,7 +27,7 @@ class Enemy : public Entity
     public:
         Enemy(int hp, int immunity, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
         void hit(int attack_type);
-        void virtual update(sf::Vector2f player_pos, sf::Time tick);
+        void update(sf::Vector2f player_pos, sf::Time tick);
         int get_hp();
     protected:
         bool valid_hit();
@@ -80,7 +80,7 @@ class Knight : public Enemy
                 sf::Vector2f position, 
                 sf::Vector2f scale, 
                 sf::Texture*);
-        void update(sf::Vector2f player_pos, sf::Time tick) override;
+        //void update(sf::Vector2f player_pos, sf::Time tick) override;
 };
 
 class Peasant : public Enemy
