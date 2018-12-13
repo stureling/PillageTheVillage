@@ -25,11 +25,13 @@ class Entity : public sf::Sprite
 class Enemy : public Entity
 {
     public:
-        Enemy(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
-        void hit(char attack_type);
+        Enemy(int hp, int immunity, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
+        void hit(int attack_type);
         void update(sf::Vector2f player_pos, sf::Time tick);
+        int get_hp();
     protected:
         bool valid_hit();
+        int immunity;
 };
 
 class Sword : public sf::Sprite
@@ -65,15 +67,8 @@ class Knight : public Enemy
 {
     public:
         Knight(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
-        void attack();  
-    private:
-    std::map<char, bool> k_immunity
-    {
-    {'w', true},
-    {'s', false}
-    };
+        void attack();
 };
-
 
 class Peasant : public Enemy
 {

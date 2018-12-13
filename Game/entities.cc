@@ -26,16 +26,16 @@ Player::Player(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f s
 Player::~Player() = default;
 
 //ENEMY
-Enemy::Enemy(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture* texture)
-    :Entity{hp, speed, position, scale, texture}{}
+Enemy::Enemy(int hp,int immunity, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture* texture)
+    :Entity{hp, speed, position, scale, texture}, immunity{immunity}{}
 
 //PEASANT
 Peasant::Peasant(sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture* texture)
-    :Enemy{1, speed, position, scale, texture}{}
+    :Enemy{1, 0, speed, position, scale, texture}{}
 
 //KNIGHT
 Knight::Knight(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture* texture)
-    :Enemy{hp, speed, position, scale, texture}{}
+    :Enemy{hp, 1, speed, position, scale, texture}{}
 
 
 
@@ -56,9 +56,17 @@ void Enemy::update(sf::Vector2f player_pos, sf::Time tick)
     }
 }
 
-void Enemy::hit(char attack_type)
+void Enemy::hit(int attack_type)
 {
-    
+    if (attack_type != immunity)
+    {
+        hp -= 1;
+    }
+}
+
+int Enemy::get_hp()
+{
+    return hp;
 }
 
 
@@ -144,12 +152,13 @@ void Sword::update(sf::Time tick, std::vector<Enemy*>* enemies, sf::Sprite* hold
     float width{holder->getGlobalBounds().width / 2.f - 5.f};
 
     setScale(holder->getScale());
+    float orientation{1.f};
 
     if (getScale().x < 0)
     {
-        width *= -1.f;
+        orientation *= -1.f;
     }    
-    setPosition(holder->getPosition().x + width, height);
+    setPosition(holder->getPosition().x + width * orientation, height);
     
     if (attack_mode != 0)
     {
@@ -157,7 +166,7 @@ void Sword::update(sf::Time tick, std::vector<Enemy*>* enemies, sf::Sprite* hold
         {
             if (getRotation() < 45  || getRotation() > 90)
             {
-                 rotate(1000 * tick.asSeconds());
+                 rotate(1000 * tick.asSeconds() * orientation);
             }
             else
             {
@@ -168,13 +177,14 @@ void Sword::update(sf::Time tick, std::vector<Enemy*>* enemies, sf::Sprite* hold
             {
                 if (getGlobalBounds().intersects(c->getGlobalBounds()))
                 {
-                    c->hit('w');
+                    c->hit(1);
                 }
 
             }
         }
         else if (attack_mode == 2)
         {
+            attack_mode = 3;
 
         }
         else if (attack_mode == 3 && getRotation() > 0 && getRotation() < 90)
