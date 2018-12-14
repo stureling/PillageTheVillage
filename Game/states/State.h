@@ -22,7 +22,7 @@ private:
     void switchPlay();
     void switchMenu(sf::RenderWindow &window, int &stateNum);
     void switchGO(sf::RenderWindow &windows, int &stateNum);
-    void switchWin();
+    void switchWin(sf::RenderWindow &window, int &stateNum);
     std::map<std::string, sf::Texture> bgs;
 
 };
@@ -53,6 +53,9 @@ public:
 class WinState : public State{
 public:
     WinState(sf::Texture &background);
+    void update(sf::Event &event_queue,
+                sf::RenderWindow &window,
+                int &stateNum);
 };
 
 #endif //STATES_STATE_H
