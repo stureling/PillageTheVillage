@@ -30,7 +30,11 @@ if (NOT (${SFML_FOUND} STREQUAL "TRUE"))
     endforeach(i)
 endif()
 
-set(SOURCE_FILES main.cc)
+set(SOURCE_FILES main.cc
+    entities.cc
+    entities.h
+    state.cc
+    state.h)
 add_executable(VillagePillage ${SOURCE_FILES})
 
 target_link_libraries(VillagePillage ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})

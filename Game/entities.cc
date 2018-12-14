@@ -91,7 +91,7 @@ void Player::hit(std::vector<Enemy*> enemies)
 }
 
 
-void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window, std::vector<Enemy*> &enemies)
+void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window, std::vector<Enemy*> &enemies, int &stateNum)
 {
     while (window.pollEvent(event_queue))
     {
@@ -101,7 +101,7 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
         {
-            window.close();
+            stateNum = 1;
         }
         else if ((event_queue.type == sf::Event::KeyPressed) 
                 && (event_queue.key.code == sf::Keyboard::Space)

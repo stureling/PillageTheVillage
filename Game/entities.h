@@ -3,15 +3,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <iterator>
-#include <cmath>
-/*class Playfield
-{
-    public:
-        sf::Sprite background;
-        //std::map<sf::Time, std::vector<Enemy> waves;
-       
-}*/
-
 
 class Entity : public sf::Sprite
 {
@@ -62,7 +53,8 @@ class Player : public Entity
         void player_update(sf::Time time, 
                 sf::Event &event_queue, 
                 sf::RenderWindow &window, 
-                std::vector<Enemy*> &enemies);
+                std::vector<Enemy*> &enemies,
+                int &stateNum);
         ~Player();
         void hit(std::vector<Enemy*> Enemy);
         //void jump();
