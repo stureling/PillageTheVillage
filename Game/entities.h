@@ -43,8 +43,8 @@ class Sword : public sf::Sprite
         void update(sf::Time tick, 
                 std::vector<Enemy*>* enemies, 
                 Sprite* holder);
-        void light_attack();
-        void heavy_attack();
+        void light_attack(sf::Time tick, std::vector<Enemy*>* enemies, float orientation);
+        void heavy_attack(sf::Time tick, std::vector<Enemy*>* enemies, float orientation);
     private:
         int attack_mode;
         sf::Clock timer;

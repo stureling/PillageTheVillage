@@ -164,39 +164,16 @@ void Sword::update(sf::Time tick, std::vector<Enemy*>* enemies, sf::Sprite* hold
     {
         if (attack_mode == 1)
         {
-            if (getRotation() < 45  || getRotation() > 315)
-            {
-                 rotate(1000 * tick.asSeconds() * orientation);
-            }
-            else
-            {
-                attack_mode = 3;
-                std::cout << "Set attack_mode = 3" << std::endl;
-            }
-            for (Enemy* c : *enemies) 
-            {
-                if (getGlobalBounds().intersects(c->getGlobalBounds()))
-                {
-                    c->hit(1);
-                }
-
-            }
+            light_attack(tick, enemies, orientation);
         }
         else if (attack_mode == 2)
         {
-            if (timer.getElapsedTime().asSeconds() < 0.5f)
-            {
-
-            }
-            if (timer.getElapsedTime().asSeconds() > 0.5f && timer.getElapsedTime().asSeconds() < 1.f)
-            {
-                setPosition(getPosition().x, getPosition().y);
-            }
+            heavy_attack(tick, enemies, orientation);
         }
         else if ((attack_mode == 3 && getRotation() > 10 && getRotation() < 180) ||
                 (attack_mode == 3 && getRotation() > 180 && getRotation() < 350))
         {
-             rotate(-1000 * tick.asSeconds() * orientation);
+            rotate(-1000 * tick.asSeconds() * orientation);
         }
         else
         {
@@ -204,7 +181,56 @@ void Sword::update(sf::Time tick, std::vector<Enemy*>* enemies, sf::Sprite* hold
             attack_mode = 0;
         }
         std::cout << getRotation() << std::endl;
+        for (Enemy* c : *enemies) 
+        {
+            if (getGlobalBounds().intersects(c->getGlobalBounds()))
+            {
+                c->hit(1);
+            }
+
+        }
     }
 
+}
+
+void Sword::light_attack(sf::Time tick, std::vector<Enemy*>* enemies, float orientation)
+{
+    if (getRotation() < 45  || getRotation() > 315)
+    {
+        rotate(1000 * tick.asSeconds() * orientation);
+    }
+    else
+    {
+        attack_mode = 3;
+        std::cout << "Set attack_mode = 3" << std::endl;
+    }
+
+}
+
+void Sword::heavy_attack(sf::Time tick, std::vector<Enemy*>* enemies, float orientation)
+{
+    if (timer.getElapsedTime().asSeconds() < 1.f)
+    {
+        float new_origin_x{getOrigin().x + timer.getElapsedTime().asSeconds() * 7.f};
+        float new_origin_y{getOrigin().x * -1.423728813559322f + 357.35593220338984f};
+        setOrigin(new_origin_x, new_origin_y);
+        setRotation(46 * timer.getElapsedTime().asSeconds() * orientation);
+    }
+    else if (timer.getElapsedTime().asSeconds() > 1.f && timer.getElapsedTime().asSeconds() < 1.5f){}
+    else if (timer.getElapsedTime().asSeconds() > 1.5f && timer.getElapsedTime().asSeconds() < 2.5f)
+    {
+        if ( getOrigin().x > 15 )
+        {
+            float new_origin_x{getOrigin().x - timer.getElapsedTime().asSeconds() * 20.f};
+            float new_origin_y{getOrigin().x * -1.423728813559322f + 357.35593220338984f};
+            setOrigin(new_origin_x, new_origin_y);
+        }
+
+    }
+    else
+    {
+        setOrigin(sf::Vector2f{15.f, 336.f});
+        attack_mode = 3;
+    }
 }
 
