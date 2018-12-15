@@ -17,7 +17,7 @@ void Engine::run()
     menu_tex.loadFromFile("static/bg/menu.png");
     bgs.emplace(std::make_pair(std::string("Menu"), sf::Texture (menu_tex)));
 
-    go_tex.loadFromFile("static/bg/go_clean.png");
+    play_tex.loadFromFile("static/bg/playfield.png");
     bgs.emplace(std::make_pair(std::string("Play"), sf::Texture (play_tex)));
 
     go_tex.loadFromFile("static/bg/go.png");
@@ -65,7 +65,7 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
 
     sf::Vector2f scale{0.3f, 0.3f};
 
-    Player p{3, sf::Vector2f{500.f, 0.f}, sf::Vector2f{200.f, 200.f}, scale, &player_tex, &sword_tex};
+    Player p{3, sf::Vector2f{500.f, 0.f}, sf::Vector2f{200.f, 770.f}, scale, &player_tex, &sword_tex};
     Peasant e{sf::Vector2f{50.f, 0.f}, sf::Vector2f{600.f, 200.f}, scale, &peasant_tex};
     Knight k{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{0.f, 200.f}, scale, &knight_tex};
 
@@ -121,7 +121,10 @@ WinState::WinState(sf::Texture &background)
     :State{background}{}
 
 PlayState::PlayState(sf::Texture &background)
-    :State{background}{}
+    :State{background}
+{
+    bg.setPosition(0.f, -250.f);
+}
 
 //UPDATE
 void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) {
@@ -172,11 +175,12 @@ void PlayState::update(sf::Time time,
         sf::RenderWindow &window,
         int &stateNum)
 {
-    window.clear(sf::Color(0, 200, 0, 255));
+    window.clear(sf::Color(0, 0, 0, 255));
+    window.draw(bg);
     for(std::vector<Enemy*>::iterator it = enemies.begin(); it != enemies.end(); it++)
     {
         Enemy* e = *it;
-        //e->update(player->getPosition(), time);
+        e->update(player->getPosition(), time);
         if (e->get_hp() <= 0)
         {
             enemies.erase(it);
