@@ -25,8 +25,10 @@ private:
 
 class State
 {
+    friend class Engine;
 public:
-    State(sf::Texture &background);
+    State(sf::Texture &background, sf::RenderWindow &window);
+    void window_resize(sf::RenderWindow &window);
 protected:
     sf::Sprite bg;
 };
@@ -34,7 +36,7 @@ protected:
 class MenuState : public State
 {
 public:
-    MenuState(sf::Texture &background);
+    MenuState(sf::Texture &background, sf::RenderWindow &window);
     void update(sf::Event &event,
             sf::RenderWindow &window,
             int &stateNum);
@@ -43,7 +45,7 @@ public:
 class GameOver : public State 
 {
 public:
-    GameOver(sf::Texture &background);
+    GameOver(sf::Texture &background, sf::RenderWindow &window);
     void update(sf::Event &event_queue,
             sf::RenderWindow &window,
             int &stateNum);
@@ -52,7 +54,7 @@ public:
 class WinState : public State
 {
 public:
-    WinState(sf::Texture &background);
+    WinState(sf::Texture &background, sf::RenderWindow &window);
     void update(sf::Event &event_queue,
                 sf::RenderWindow &window,
                 int &stateNum);
@@ -61,7 +63,7 @@ public:
 class PlayState : public State
 {
     public:
-        PlayState(sf::Texture &background);
+        PlayState(sf::Texture &background, sf::RenderWindow &window);
         void addEnemy(Enemy* entity);
         void setPlayer(Player* player);
         void update(sf::Time time, 

@@ -11,6 +11,7 @@ class Entity : public sf::Sprite
     protected:
         sf::Vector2f const speed; 
         int hp;
+        sf::Vector2f scale;
 };
 
 class Enemy : public Entity

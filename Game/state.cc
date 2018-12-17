@@ -9,6 +9,8 @@ Engine::Engine()
 : window{sf::VideoMode(1920, 1080), "Hang in there, bud"}, bgs{}
 {
     window.setVerticalSyncEnabled(true);
+    window.setKeyRepeatEnabled(false);
+    window.setMouseCursorVisible(false);
 }
 void Engine::run()
 {
@@ -45,7 +47,7 @@ void Engine::switchMenu(sf::RenderWindow &window, int &stateNum)
     sf::Event event{};
     sf::Texture bg{bgs.at("Menu")};
     sf::Sprite bag;
-    MenuState menu{bg};
+    MenuState menu{bg, window};
 
     while(stateNum == 1) {
 
@@ -55,7 +57,7 @@ void Engine::switchMenu(sf::RenderWindow &window, int &stateNum)
 }
 void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
 {
-    PlayState playstate{bgs.at("Play")};
+    PlayState playstate{bgs.at("Play"), window};
 
     sf::Texture player_tex, peasant_tex, knight_tex, sword_tex;
     player_tex.loadFromFile("static/textures/player.png");
@@ -63,10 +65,10 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
     knight_tex.loadFromFile("static/textures/knight.png");
     sword_tex.loadFromFile("static/textures/Sword-1.png");
 
-    sf::Vector2f scale{0.3f, 0.3f};
+    sf::Vector2f scale{0.3f * playstate.bg.getScale()};
 
-    Player p{3, sf::Vector2f{500.f, 0.f}, sf::Vector2f{200.f, 770.f}, scale, &player_tex, &sword_tex};
-    Peasant e{sf::Vector2f{50.f, 0.f}, sf::Vector2f{600.f, 200.f}, scale, &peasant_tex};
+    Player p{3, sf::Vector2f{500.f, 0.f}, sf::Vector2f{200.f, playstate.bg.getGlobalBounds().height * 0.75f}, scale, &player_tex, &sword_tex};
+    Peasant e{sf::Vector2f{50.f, 0.f}, sf::Vector2f{600.f, playstate.bg.getGlobalBounds().height * 0.75f}, scale, &peasant_tex};
     Knight k{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{0.f, 200.f}, scale, &knight_tex};
 
     playstate.setPlayer(&p);
@@ -74,7 +76,6 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
     playstate.addEnemy(&k);
     sf::Clock clock;
     sf::Event event{};
-    window.setVerticalSyncEnabled(true);
     while(stateNum == 2)
     {
         sf::Time elapsed = clock.restart();
@@ -86,9 +87,8 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
 void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
 {
     sf::Event event{};
-    sf::Texture bg;
-    bg = bgs.at("GO");
-    GameOver g{bg};
+    sf::Texture bg{bgs.at("GO")};
+    GameOver g{bg, window};
     while(stateNum == 3) {
         g.update(event, window, stateNum);
         window.display();
@@ -97,9 +97,8 @@ void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
 void Engine::switchWin(sf::RenderWindow &window, int &stateNum) {
 
     sf::Event event{};
-    sf::Texture bg;
-    bg = bgs.at("Win");
-    WinState w{bg};
+    sf::Texture bg{bgs.at("Win")};
+    WinState w{bg, window};
     while (stateNum == 4) {
         w.update(event, window, stateNum);
         window.display();
@@ -107,23 +106,25 @@ void Engine::switchWin(sf::RenderWindow &window, int &stateNum) {
 }
 
 //STATE CONSTRUCTOR
-State::State(sf::Texture &background)
+State::State(sf::Texture &background, sf::RenderWindow &window)
 {
     bg.setTexture(background);
+    float scale{window.getSize().x / bg.getLocalBounds().width};
+    bg.setScale(scale, scale);
 }
-MenuState::MenuState(sf::Texture &background)
-    :State{background}{}
+MenuState::MenuState(sf::Texture &background, sf::RenderWindow &window)
+    :State{background, window}{}
 
-GameOver::GameOver(sf::Texture &background)
-    :State{background}{}
+GameOver::GameOver(sf::Texture &background, sf::RenderWindow &window)
+    :State{background, window}{}
 
-WinState::WinState(sf::Texture &background)
-    :State{background}{}
+WinState::WinState(sf::Texture &background, sf::RenderWindow &window)
+    :State{background, window}{}
 
-PlayState::PlayState(sf::Texture &background)
-    :State{background}
+PlayState::PlayState(sf::Texture &background, sf::RenderWindow &window)
+    :State{background, window}
 {
-    bg.setPosition(0.f, -250.f);
+    bg.setPosition(0.f, -250.f * bg.getScale().x);
 }
 
 //UPDATE
@@ -189,7 +190,17 @@ void PlayState::update(sf::Time time,
     }
     player->player_update(time, event, window, enemies, stateNum);
     player->hit(enemies);
+    window_resize(window);
 }
+//STATE FUNCTIONS
+void State::window_resize(sf::RenderWindow &window)
+{
+    sf::Vector2u valid_aspect{window.getSize().x, window.getSize().x / (16 / 9)};
+    window.setSize(valid_aspect);
+    float scale{window.getSize().x / bg.getLocalBounds().width};
+    bg.setScale(scale, scale);
+}
+
 
 //PLAYSTATE FUNCTIONS
 void PlayState::addEnemy(Enemy* enemy)

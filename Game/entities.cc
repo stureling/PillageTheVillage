@@ -2,7 +2,7 @@
 //CONSTRUCTORS
 //ENTITY
 Entity::Entity(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture* texture)
-    :speed{speed}, hp{hp}
+    :speed{speed}, hp{hp}, scale{scale}
 {
     setTexture(*texture);
     setOrigin(sf::Vector2f{(getLocalBounds().width / 2.f), getLocalBounds().height});
@@ -46,13 +46,13 @@ void Enemy::update(sf::Vector2f player_pos, sf::Time tick)
     //DRY
     if (player_pos.x > getPosition().x)
     {
-        setScale(sf::Vector2f(0.3f, 0.3f));
-        move(speed * tick.asSeconds());
+        setScale(scale);
+        move(speed / getScale().y * tick.asSeconds());
     }
     else
     {
-        setScale(sf::Vector2f(-0.3f, 0.3f));
-        move(-speed * tick.asSeconds());
+        setScale(-scale.x, scale.y);
+        move(-speed / getScale().y * tick.asSeconds());
     }
 }
 
@@ -126,16 +126,16 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
         }
     }
     //Movement has to be outside events to be smooth
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && getPosition().x > getGlobalBounds().width / 2)
     {
-        setScale(sf::Vector2f(-0.3f, 0.3f));
-        move(-speed * time.asSeconds() );
+        setScale(-scale.x, scale.y);
+        move(speed * (getScale().x / 0.3f) * time.asSeconds() );
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && getPosition().x < window.getSize().x - getGlobalBounds().width / 2)
     {
-        setScale(sf::Vector2f(0.3f, 0.3f));
-        move(speed * time.asSeconds() );
+        setScale(scale);
+        move(speed * (getScale().x / 0.3f) * time.asSeconds() );
     }
 
     sword.update(time, enemies, this);
@@ -148,7 +148,7 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
 
 void Sword::update(sf::Time tick, std::vector<Enemy*> enemies, sf::Sprite* holder)
 {
-    float height{holder->getPosition().y - holder->getGlobalBounds().height + (290 * 0.3f)};
+    float height{holder->getPosition().y - holder->getGlobalBounds().height + (290 * holder->getScale().y)};
     float width{holder->getGlobalBounds().width / 2.f - 5.f};
 
     setScale(holder->getScale());
@@ -219,9 +219,12 @@ void Sword::heavy_attack(sf::Time tick, std::vector<Enemy*> enemies, float orien
         float new_origin_x{timer.getElapsedTime().asSeconds() * 255.f + 15.f};
         float new_origin_y{getOrigin().x * -1.423728813559322f + 357.35593220338984f};
         setOrigin(new_origin_x, new_origin_y);
-        setRotation(46 * timer.getElapsedTime().asSeconds() * orientation);
+        setRotation(45 * timer.getElapsedTime().asSeconds() * orientation);
     }
-    else if (timer.getElapsedTime().asSeconds() > 1.f && timer.getElapsedTime().asSeconds() < 1.5f){}
+    else if (timer.getElapsedTime().asSeconds() > 1.f && timer.getElapsedTime().asSeconds() < 1.5f)
+    {
+            setRotation(45 * orientation);
+    }
     else if (timer.getElapsedTime().asSeconds() > 1.5f && timer.getElapsedTime().asSeconds() < 2.5f)
     {
         if ( getOrigin().x > 15 )
@@ -229,9 +232,9 @@ void Sword::heavy_attack(sf::Time tick, std::vector<Enemy*> enemies, float orien
             float new_origin_x{getOrigin().x - timer.getElapsedTime().asSeconds() * 20.f};
             float new_origin_y{getOrigin().x * -1.423728813559322f + 357.35593220338984f};
             setOrigin(new_origin_x, new_origin_y);
-            setRotation(45 * orientation);
             strike_enemies(enemies);
         }
+        setRotation(45 * orientation);
     }
     else
     {
