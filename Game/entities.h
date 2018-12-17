@@ -32,10 +32,11 @@ class Sword : public sf::Sprite
     public:
         Sword(sf::Vector2f scale, sf::Texture* texture);
         void update(sf::Time tick, 
-                std::vector<Enemy*>* enemies, 
+                std::vector<Enemy*> enemies, 
                 Sprite* holder);
-        void light_attack(sf::Time tick, std::vector<Enemy*>* enemies, float orientation);
-        void heavy_attack(sf::Time tick, std::vector<Enemy*>* enemies, float orientation);
+        void strike_enemies(std::vector<Enemy*> enemies);
+        void light_attack(sf::Time tick, std::vector<Enemy*> enemies, float orientation);
+        void heavy_attack(sf::Time tick, std::vector<Enemy*> enemies, float orientation);
     private:
         int attack_mode;
         sf::Clock timer;

@@ -138,7 +138,7 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
         move(speed * time.asSeconds() );
     }
 
-    sword.update(time, &enemies, this);
+    sword.update(time, enemies, this);
     hit(enemies);
     window.draw(sword);
     window.draw(*this);
@@ -146,7 +146,7 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
 
 //SWORD FUNCTIONS
 
-void Sword::update(sf::Time tick, std::vector<Enemy*>* enemies, sf::Sprite* holder)
+void Sword::update(sf::Time tick, std::vector<Enemy*> enemies, sf::Sprite* holder)
 {
     float height{holder->getPosition().y - holder->getGlobalBounds().height + (290 * 0.3f)};
     float width{holder->getGlobalBounds().width / 2.f - 5.f};
@@ -170,43 +170,49 @@ void Sword::update(sf::Time tick, std::vector<Enemy*>* enemies, sf::Sprite* hold
         {
             heavy_attack(tick, enemies, orientation);
         }
-        else if (attack_mode == 3 && timer.getElapsedTime().asSeconds() < 0.2f)
+        else if (attack_mode == 3 && timer.getElapsedTime().asSeconds() < 0.15f)
         {
-            setRotation(45 * orientation - timer.getElapsedTime().asSeconds() * 255.f * orientation);
+            setRotation(45 * orientation - timer.getElapsedTime().asSeconds() * (45.f / 0.15) * orientation);
         }
         else
         {
             setRotation(0);
             attack_mode = 0;
         }
-        for (Enemy* c : *enemies) 
-        {
-            if (getGlobalBounds().intersects(c->getGlobalBounds()))
-            {
-                c->hit(1);
-            }
-
-        }
     }
-
 }
 
-void Sword::light_attack(sf::Time tick, std::vector<Enemy*>* enemies, float orientation)
+void Sword::strike_enemies(std::vector<Enemy*> enemies)
+{
+    for (Enemy* c : enemies) 
+    {
+        if (getGlobalBounds().intersects(c->getGlobalBounds()))
+        {
+            c->hit(attack_mode);
+        }
+    }
+}
+
+void Sword::light_attack(sf::Time tick, std::vector<Enemy*> enemies, float orientation)
 {
     float animation_time{timer.getElapsedTime().asSeconds()};
     if (animation_time < 0.1f)
     {
         setRotation(animation_time * 450.f * orientation);
+        strike_enemies(enemies);
     }
     else
     {
         attack_mode = 3;
         timer.restart();
     }
-
 }
 
-void Sword::heavy_attack(sf::Time tick, std::vector<Enemy*>* enemies, float orientation)
+void Sword::heavy_attack(sf::Time tick, std::vector<Enemy*> enemies, float orientation)
+    /** \brief Detta är en kort beskrivning.
+     *
+     * Detta är en detaljerad kommentar
+     */
 {
     if (timer.getElapsedTime().asSeconds() < 1.f)
     {
@@ -224,12 +230,13 @@ void Sword::heavy_attack(sf::Time tick, std::vector<Enemy*>* enemies, float orie
             float new_origin_y{getOrigin().x * -1.423728813559322f + 357.35593220338984f};
             setOrigin(new_origin_x, new_origin_y);
             setRotation(45 * orientation);
+            strike_enemies(enemies);
         }
-
     }
     else
     {
         setOrigin(sf::Vector2f{15.f, 336.f});
+        setRotation(45 * orientation);
         attack_mode = 3;
         timer.restart();
     }
