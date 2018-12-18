@@ -236,7 +236,10 @@ void Player::jump(sf::Time tick)
      * Detta är en detaljerad kommentar
      */
 {
-
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !(getPosition().y < 730))
+    {
+      setPosition(getPosition().x, -(tick**2) + 730);
+    }
 }
 
 //SWORD FUNCTIONS
