@@ -81,7 +81,7 @@ class Playfield
 {
     public:
         Playfield();
-        std::map<sf::Time, std::vector<Enemy*> wave;
+        std::map<sf::Time, std::vector<Enemy*>> wave;
 };
 
 #endif

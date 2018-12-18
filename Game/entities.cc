@@ -250,10 +250,6 @@ void Player::jump(sf::Time tick)
      * Detta är en detaljerad kommentar
      */
 {
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !(getPosition().y < 730))
-    {
-      setPosition(getPosition().x, -(tick**2) + 730);
-    }
 }
 
 //SWORD FUNCTIONS
@@ -355,16 +351,16 @@ void Sword<T>::heavy_attack(std::vector<T> enemies, float orientation)
 {
     if (timer.getElapsedTime().asSeconds() < 1.f * speed)
     {
-        float new_origin_x{timer.getElapsedTime().asSeconds() * 255.f + 15.f};
+        float new_origin_x{timer.getElapsedTime().asSeconds() / speed * 255.f + 15.f};
         float new_origin_y{getOrigin().x * -1.423728813559322f + 357.35593220338984f};
         setOrigin(new_origin_x, new_origin_y);
-        setRotation(45 * timer.getElapsedTime().asSeconds() * orientation);
+        setRotation(45 * timer.getElapsedTime().asSeconds() / speed * orientation);
     }
-    else if (timer.getElapsedTime().asSeconds() > 1.f && timer.getElapsedTime().asSeconds() < 1.5f)
+    else if (timer.getElapsedTime().asSeconds() > 1.f * speed && timer.getElapsedTime().asSeconds() < 1.5f * speed)
     {
             setRotation(45 * orientation);
     }
-    else if (timer.getElapsedTime().asSeconds() > 1.5f && timer.getElapsedTime().asSeconds() < 2.5f)
+    else if (timer.getElapsedTime().asSeconds() > 1.5f * speed && timer.getElapsedTime().asSeconds() < 2.5f * speed)
     {
         if ( getOrigin().x > 15 )
         {
@@ -394,14 +390,15 @@ void Knight::update(Entity* player, sf::RenderWindow &window, sf::Time tick)
     }
     setScale(scale.x * orientation, scale.y);
     move(speed * orientation / getScale().y * tick.asSeconds());
-    if( std::abs(player->getPosition().x - getPosition().x) < getGlobalBounds().width / 2  + sword.getGlobalBounds().width && sword.attack_mode == 0)
+    if( std::abs(player->getPosition().x - getPosition().x) < getGlobalBounds().width  + sword.getGlobalBounds().width && sword.attack_mode == 0)
     {
         sword.attack_mode = 2;
+        sword.timer.restart();
     }
     std::vector<Player*> v;
     Player* p = dynamic_cast<Player *>(player);
     v.push_back(p);
     sword.update(v, this);
-    window.draw(*this);
     window.draw(sword);
+    window.draw(*this);
 }
