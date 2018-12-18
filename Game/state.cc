@@ -150,6 +150,8 @@ State::State(sf::Texture &background, sf::RenderWindow &window)
     sf::Vector2u valid_aspect{window.getSize().x, (window.getSize().x / 18) * 10};
     window.setSize(valid_aspect);
     bg.setTexture(background);
+    float scale = window.getSize().x / bg.getLocalBounds().width;
+    bg.setScale(scale, scale);
 }
 MenuState::MenuState(sf::Texture &background, sf::RenderWindow &window)
     :State{background, window}{}
