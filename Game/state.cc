@@ -71,7 +71,7 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
 {
   /**\brief The function responsible for creating and switching to PlayState.
    *
-   *
+   *Creates the PlayState and sets it texture by using Engine's map of textures. While the state is active the PlayState's update function is run.
    */
     PlayState playstate{bgs.at("Play"), window};
 
@@ -108,7 +108,9 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
 }
 void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
 {
-  /**\brief The function responsible for creating and switching to PlayState.
+  /**\brief The function responsible for creating and switching to GameOverState.
+   *
+   *Creates the GameOverState and sets it texture by using Engine's map of textures. While the state is active the GameOverState's update function is run.
    */
     sf::Event event{};
     sf::Texture bg{bgs.at("GO")};
@@ -118,11 +120,12 @@ void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
         window.display();
     }
 }
-<<<<<<< HEAD
+
 void Engine::switchWin(sf::RenderWindow &window, int &stateNum)
 {
   /**\brief The function responsible for creating and switching to WinState.
    *
+   *Creates the WinState and sets it texture by using Engine's map of textures. While the state is active the WinState's update function is run.
    */
     sf::Event event{};
     sf::Texture bg{bgs.at("Win")};
@@ -136,6 +139,10 @@ void Engine::switchWin(sf::RenderWindow &window, int &stateNum)
 //STATE CONSTRUCTOR
 State::State(sf::Texture &background, sf::RenderWindow &window)
 {
+  /**\brief State's constructor. 
+   *
+   *Sets texture for the background sprite and causes the dimensionens of the window to keep a ratio of 16:9 regardless oc scaling.
+   */
     sf::Vector2u valid_aspect{window.getSize().x, (window.getSize().x / 18) * 10};
     window.setSize(valid_aspect);
     bg.setTexture(background);
@@ -154,9 +161,9 @@ PlayState::PlayState(sf::Texture &background, sf::RenderWindow &window)
 
 //UPDATE
 void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
-    /** \brief Detta är en kort beskrivning.
+    /** \brief A function to update the game while in MenuState.
      *
-     * Detta är en detaljerad kommentar
+     * Draws the background image. Takes in keyboard input to either switch to the PlayState or close the game. Trigger switching of states by changing the value of stateNum.
      */
 {
     window_resize(window);
@@ -172,14 +179,13 @@ void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &st
             window.close();
             stateNum = 0;
         }
-
     }
 }
 
 void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
-    /** \brief Detta är en kort beskrivning.
+    /** \brief A function to update the game while in GameOverState.
      *
-     * Detta är en detaljerad kommentar
+     *  Draws the background image. Takes in keyboard input to switch to MenuState. Triggers switching of states by changing the value of stateNum.
      */
 {
     window_resize(window);
@@ -187,20 +193,17 @@ void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
     window.draw(bg);
     while (window.pollEvent(event_queue)) {
         if (event_queue.type == sf::Event::KeyReleased
-            && event_queue.key.code == sf::Keyboard::Escape) {
+            && event_queue.key.code == sf::Keyboard::Return)
+	  {
             stateNum = 1;
-        }
-        else if (event_queue.type == sf::Event::KeyReleased
-                 && event_queue.key.code == sf::Keyboard::Return) {
-            stateNum = 4;
-        }
+	  }
     }
 }
 
 void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
-    /** \brief Detta är en kort beskrivning.
+    /** \brief A function to update the game while in WinState.
      *
-     * Detta är en detaljerad kommentar
+     *  Draws the background image. Takes in keyboard input to switch to MenuState. Triggers switching of states by changing the value of stateNum.
      */
 {
     window_resize(window);
@@ -242,9 +245,9 @@ void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window
 }
 //STATE FUNCTIONS
 void State::window_resize(sf::RenderWindow &window)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief Controls the scaling of the window.
      *
-     * Detta är en detaljerad kommentar
+     * Keeps the window at a constant ratio of 16:9 regardless of scaling.
      */
 {
     sf::Vector2u valid_aspect{window.getSize().x, (window.getSize().x / 18) * 10};
@@ -255,18 +258,18 @@ void State::window_resize(sf::RenderWindow &window)
 
 //PLAYSTATE FUNCTIONS
 void PlayState::addEnemy(Enemy* enemy)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief Adds an Enemy object to a vector.
      *
-     * Detta är en detaljerad kommentar
+     * Inserts the Enemy object at the beginning of the vector.
      */
 {
     enemies.push_back(enemy);
 }
 
-void PlayState::setPlayer(Player* entity)
-    /** \brief Detta är en kort beskrivning.
+void PlayState::setPlayer(Player* entity) //WHAT DOES THIS DOOO?
+    /** \brief Adds an Player object to the PlayState vector.
      *
-     * Detta är en detaljerad kommentar
+     * Inserts the Player object at the beginning of the vector.
      */
 {
     player = entity;
