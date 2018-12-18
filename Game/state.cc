@@ -7,12 +7,20 @@
 //ENGINE FUNCTIONS
 Engine::Engine()
 : window{sf::VideoMode(1280, 720), "Hang in there, bud"}, bgs{}
+  /**\brief Constructor for Engine.
+   *
+   *Engine's constructor is responsible for creating the window with the correct resolution. It's also responsible for enabling and disabling window's settings. Finally it creates a map to contain the textures for all the background sprites.
+   */
 {
     window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
     window.setMouseCursorVisible(false);
 }
 void Engine::run()
+/**\brief The function that initiates the game and switches between states.
+ *
+ *Adds all relevant background textures to its map. Uses stateNum to determine which state should be active. Calls the appropriate switch-function to create and run the desired state.
+ */
 {
     int stateNum{1};
     sf::Texture menu_tex, go_tex, win_tex, play_tex;
@@ -44,6 +52,10 @@ void Engine::run()
 //SWITCH
 void Engine::switchMenu(sf::RenderWindow &window, int &stateNum)
 {
+  /**\brief The function responsible for creating and switching to MenuState.
+   *
+   *Creates the MenuState and sets it texture by using Engine's map of textures. While the state is active the MenuState's update function is run.
+   */
     sf::Event event{};
     sf::Texture bg{bgs.at("Menu")};
     sf::Sprite bag;
@@ -57,6 +69,10 @@ void Engine::switchMenu(sf::RenderWindow &window, int &stateNum)
 }
 void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
 {
+  /**\brief The function responsible for creating and switching to PlayState.
+   *
+   *
+   */
     PlayState playstate{bgs.at("Play"), window};
 
     sf::Texture player_tex, peasant_tex, knight_tex, sword_tex;
@@ -91,6 +107,8 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
 }
 void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
 {
+  /**\brief The function responsible for creating and switching to PlayState.
+   */
     sf::Event event{};
     sf::Texture bg{bgs.at("GO")};
     GameOver g{bg, window};
@@ -99,8 +117,11 @@ void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
         window.display();
     }
 }
-void Engine::switchWin(sf::RenderWindow &window, int &stateNum) {
-
+void Engine::switchWin(sf::RenderWindow &window, int &stateNum)
+{
+  /**\brief The function responsible for creating and switching to WinState.
+   *
+   */
     sf::Event event{};
     sf::Texture bg{bgs.at("Win")};
     WinState w{bg, window};
