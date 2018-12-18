@@ -40,11 +40,21 @@ Knight::Knight(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f s
 
 
 //FUNCTIONS
+//ENTITY FUNCTIONS
+int Entity::get_hp()
+    /** \brief Returns hp.
+     *
+     * Returns hp.
+     */
+{
+    return hp;
+}
+
 //ENEMY FUCNTIONS
 void Enemy::update(sf::Vector2f player_pos, sf::Time tick)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief Moves the enemies towards the player character.
      *
-     * Detta är en detaljerad kommentar
+     * Moves the enemies towards the player character based on the time elapsed sincecthe last frame.
      */
 {
     //DRY
@@ -74,19 +84,11 @@ void Enemy::hit(int attack_type)
     }
 }
 
-int Enemy::get_hp()
-    /** \brief Detta är en kort beskrivning.
-     *
-     * Detta är en detaljerad kommentar
-     */
-{
-    return hp;
-}
 
 unsigned Enemy::get_points()
-    /** \brief Detta är en kort beskrivning.
+    /** \brief Returns points.
      *
-     * Detta är en detaljerad kommentar
+     * Returns points.
      */
 {
     return points;
@@ -95,9 +97,10 @@ unsigned Enemy::get_points()
 //PLAYER FUNCTIONS
 
 void Player::hit(std::vector<Enemy*> enemies)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief Checks if the player character is colliding with an enemy and updates the player accordingly.
      *
-     * Detta är en detaljerad kommentar
+     * Checks if any enemy intersects with the player character if it isn't currently immune.
+     * If intersection occurs; knockback is applied on both the player character and the enemy. The player character's health is reduced and immunity is gained.
      */
 {
     if( immunity_timer.getElapsedTime().asSeconds() > 1.5f)
@@ -126,13 +129,13 @@ void Player::hit(std::vector<Enemy*> enemies)
 
 
 void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window, std::vector<Enemy*> &enemies, int &stateNum)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief Updates the player character
      *
-     * Detta är en detaljerad kommentar
+     * Calls subfunctions related to updating the player characters position, scale, health. Ends the playstate if the player's health reaches 0.
      */
 {
     process_input(event_queue, stateNum, window, time);
-    sword.update(time, enemies, this);
+    sword.update(enemies, this);
     hit(enemies);
     window.draw(sword);
     draw_player(window);
@@ -144,9 +147,9 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
 }
 
 void Player::draw_player(sf::RenderWindow &window)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief Draws the player character.
      *
-     * Detta är en detaljerad kommentar
+     * Draws the player character. If the player character is currently immune to damage the player character blinks with a frequency of 5 blinks per second.
      */
 {
     if( immunity_timer.getElapsedTime().asSeconds() <= 1.5f )
@@ -170,9 +173,11 @@ void Player::draw_player(sf::RenderWindow &window)
 }
 
 void Player::process_input( sf::Event &event_queue, int &stateNum, sf::RenderWindow &window, sf::Time tick)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief Handels the inputs from the keyboard and other events
      *
-     * Detta är en detaljerad kommentar
+     * Changes the current state based on player input.
+     * Updates the player characters position and scale based on input and time passed since last function call.
+     *
      */
 {
     while (window.pollEvent(event_queue))
@@ -206,7 +211,6 @@ void Player::process_input( sf::Event &event_queue, int &stateNum, sf::RenderWin
             sword.timer.restart();
         }
     }
-    //Movement has to be outside events to be smooth
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && getPosition().x > getGlobalBounds().width / 2)
     {
         setScale(-scale.x, scale.y);
@@ -241,10 +245,11 @@ void Player::jump(sf::Time tick)
 
 //SWORD FUNCTIONS
 
-void Sword::update(sf::Time tick, std::vector<Enemy*> enemies, sf::Sprite* holder)
-    /** \brief Detta är en kort beskrivning.
+void Sword::update(std::vector<Enemy*> enemies, sf::Sprite* holder)
+    /** \brief Updates the swords position and scale relative to its holder and calls attack functions if the sword is in an attack mode.
      *
-     * Detta är en detaljerad kommentar
+    * Updates the swords position and scale relative to its holder and calls attack functions if the sword is in an attack mode. 
+     * 
      */
 {
     float height{holder->getPosition().y - holder->getGlobalBounds().height + (290 * holder->getScale().y)};
@@ -263,11 +268,11 @@ void Sword::update(sf::Time tick, std::vector<Enemy*> enemies, sf::Sprite* holde
     {
         if (attack_mode == 1)
         {
-            light_attack(tick, enemies, orientation);
+            light_attack(enemies, orientation);
         }
         else if (attack_mode == 2)
         {
-            heavy_attack(tick, enemies, orientation);
+            heavy_attack(enemies, orientation);
         }
         else if (attack_mode == 3 && timer.getElapsedTime().asSeconds() < 0.15f)
         {
@@ -282,9 +287,10 @@ void Sword::update(sf::Time tick, std::vector<Enemy*> enemies, sf::Sprite* holde
 }
 
 void Sword::strike_enemies(std::vector<Enemy*> enemies)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief Detects collision during attack.
      *
-     * Detta är en detaljerad kommentar
+     * Goes through a list of enemies and checks collision.
+     * If collision occurs the enemy is knocked back and the hit function is called on the object.
      */
 {
     if (enemies.size() > 0)
@@ -306,7 +312,7 @@ void Sword::strike_enemies(std::vector<Enemy*> enemies)
     }
 }
 
-void Sword::light_attack(sf::Time tick, std::vector<Enemy*> enemies, float orientation)
+void Sword::light_attack(std::vector<Enemy*> enemies, float orientation)
     /** \brief The sword swings back and forth quickly.
      *
      * The sword swings back and forth between 0 and 45 degrees and checks for collision with enemies relative to the holder.
@@ -326,7 +332,7 @@ void Sword::light_attack(sf::Time tick, std::vector<Enemy*> enemies, float orien
     }
 }
 
-void Sword::heavy_attack(sf::Time tick, std::vector<Enemy*> enemies, float orientation)
+void Sword::heavy_attack(std::vector<Enemy*> enemies, float orientation)
     /** \brief The sword moves in a predetermined pattern relative to the holder
      *
      * The sword follows a specific animation pattern relative to the holders position and scale.

@@ -9,6 +9,7 @@ class Entity : public sf::Sprite
 {
     public:
         Entity(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
+        int get_hp();
     protected:
         sf::Vector2f const speed; 
         int hp;
@@ -24,7 +25,6 @@ class Enemy : public Entity
         Enemy(int hp, int immunity, unsigned points, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
         void hit(int attack_type);
         void update(sf::Vector2f player_pos, sf::Time tick);
-        int get_hp();
         unsigned get_points();
     protected:
         int immunity;
@@ -37,12 +37,10 @@ class Sword : public sf::Sprite
     friend class Knight;
     public:
         Sword(sf::Vector2f scale, sf::Texture &texture, float speed);
-        void update(sf::Time tick, 
-                std::vector<Enemy*> enemies, 
-                Sprite* holder);
+        void update(std::vector<Enemy*> enemies, Sprite* holder);
         void strike_enemies(std::vector<Enemy*> enemies);
-        void light_attack(sf::Time tick, std::vector<Enemy*> enemies, float orientation);
-        void heavy_attack(sf::Time tick, std::vector<Enemy*> enemies, float orientation);
+        void light_attack(std::vector<Enemy*> enemies, float orientation);
+        void heavy_attack(std::vector<Enemy*> enemies, float orientation);
     private:
         int attack_mode;
         sf::Clock timer;
