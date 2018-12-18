@@ -6,7 +6,7 @@
 
 //ENGINE FUNCTIONS
 Engine::Engine()
-: window{sf::VideoMode(1280, 720), "Hang in there, bud"}, bgs{}
+: window{sf::VideoMode(1920, 1080), "Hang in there, bud"}, bgs{}
   /**\brief Constructor for Engine.
    *
    *Engine's constructor is responsible for creating the window with the correct resolution. It's also responsible for enabling and disabling window's settings. Finally it creates a map to contain the textures for all the background sprites.
