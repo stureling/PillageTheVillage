@@ -6,7 +6,7 @@
 
 //ENGINE FUNCTIONS
 Engine::Engine()
-: window{sf::VideoMode(1920, 1080), "Hang in there, bud"}, bgs{}
+: window{sf::VideoMode(1280, 720), "Hang in there, bud"}, bgs{}
 {
     window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
@@ -65,15 +65,20 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
     knight_tex.loadFromFile("static/textures/knight.png");
     sword_tex.loadFromFile("static/textures/Sword-1.png");
 
-    sf::Vector2f scale{0.3f * playstate.bg.getScale()};
+    sf::Vector2f scale{0.3f, 0.3f};
+    float playheight{770};
 
-    Player p{3, sf::Vector2f{500.f, 0.f}, sf::Vector2f{200.f, playstate.bg.getGlobalBounds().height * 0.75f}, scale, &player_tex, &sword_tex};
-    Peasant e{sf::Vector2f{50.f, 0.f}, sf::Vector2f{600.f, playstate.bg.getGlobalBounds().height * 0.75f}, scale, &peasant_tex};
-    Knight k{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{0.f, 200.f}, scale, &knight_tex};
+    Player p{3, sf::Vector2f{500.f, 0.f}, sf::Vector2f{200.f, playheight}, scale, &player_tex, &sword_tex};
+    Peasant e{sf::Vector2f{50.f, 0.f}, sf::Vector2f{600.f, playheight}, scale, &peasant_tex};
+    Peasant e1{sf::Vector2f{50.f, 0.f}, sf::Vector2f{650.f, playheight}, scale, &peasant_tex};
+    Knight k{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{10.f, playheight}, scale, &knight_tex};
+    Knight k1{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{10.f, playheight}, scale, &knight_tex};
 
     playstate.setPlayer(&p);
     playstate.addEnemy(&e);
+    playstate.addEnemy(&e1);
     playstate.addEnemy(&k);
+    playstate.addEnemy(&k1);
     sf::Clock clock;
     sf::Event event{};
     while(stateNum == 2)
@@ -109,8 +114,6 @@ void Engine::switchWin(sf::RenderWindow &window, int &stateNum) {
 State::State(sf::Texture &background, sf::RenderWindow &window)
 {
     bg.setTexture(background);
-    float scale{window.getSize().x / bg.getLocalBounds().width};
-    bg.setScale(scale, scale);
 }
 MenuState::MenuState(sf::Texture &background, sf::RenderWindow &window)
     :State{background, window}{}
@@ -124,12 +127,13 @@ WinState::WinState(sf::Texture &background, sf::RenderWindow &window)
 PlayState::PlayState(sf::Texture &background, sf::RenderWindow &window)
     :State{background, window}
 {
-    bg.setPosition(0.f, -250.f * bg.getScale().x);
+    bg.setPosition(0.f, -250.f);
 }
 
 //UPDATE
 void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) {
-    window.clear(sf::Color(0, 200, 0, 255));
+    window_resize(window);
+    window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
     while (window.pollEvent(event_queue)) {
         if (event_queue.type == sf::Event::KeyReleased
@@ -146,7 +150,8 @@ void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &st
 }
 
 void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) {
-    window.clear(sf::Color(0, 0, 200, 255));
+    window_resize(window);
+    window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
     while (window.pollEvent(event_queue)) {
         if (event_queue.type == sf::Event::KeyReleased
@@ -161,7 +166,8 @@ void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
 }
 
 void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) {
-    window.clear(sf::Color(0, 0, 200, 255));
+    window_resize(window);
+    window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
     while (window.pollEvent(event_queue)) {
         if (event_queue.type == sf::Event::KeyReleased
@@ -176,29 +182,29 @@ void PlayState::update(sf::Time time,
         sf::RenderWindow &window,
         int &stateNum)
 {
+    window_resize(window);
     window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
-    for(std::vector<Enemy*>::iterator it = enemies.begin(); it != enemies.end(); it++)
-    {
-        Enemy* e = *it;
-        e->update(player->getPosition(), time);
-        if (e->get_hp() <= 0)
-        {
-            enemies.erase(it);
-        }
-        window.draw(*e);
-    }
     player->player_update(time, event, window, enemies, stateNum);
     player->hit(enemies);
-    window_resize(window);
+    for(Enemy* e : enemies)
+    {
+        e->update(player->getPosition(), time);
+        window.draw(*e);
+    }
+    enemies.erase(
+    std::remove_if(
+        enemies.begin(),
+        enemies.end(),
+        [](Enemy* const & c) { return c->get_hp() <= 0; }),
+    enemies.end());
 }
 //STATE FUNCTIONS
 void State::window_resize(sf::RenderWindow &window)
 {
-    sf::Vector2u valid_aspect{window.getSize().x, window.getSize().x / (16 / 9)};
+    sf::Vector2u valid_aspect{window.getSize().x, (window.getSize().x / 18) * 10};
     window.setSize(valid_aspect);
-    float scale{window.getSize().x / bg.getLocalBounds().width};
-    bg.setScale(scale, scale);
+    bg.setScale(1, 1);
 }
 
 

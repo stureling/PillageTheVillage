@@ -12,6 +12,9 @@ class Entity : public sf::Sprite
         sf::Vector2f const speed; 
         int hp;
         sf::Vector2f scale;
+        sf::Clock timer;
+        sf::Clock immunity_timer;
+        bool marked_for_destruction;
 };
 
 class Enemy : public Entity
@@ -22,7 +25,6 @@ class Enemy : public Entity
         void update(sf::Vector2f player_pos, sf::Time tick);
         int get_hp();
     protected:
-        bool valid_hit();
         int immunity;
 };
 
@@ -52,17 +54,17 @@ class Player : public Entity
                 sf::Vector2f scale, 
                 sf::Texture* player_t, 
                 sf::Texture* sword_t);
+        ~Player();
         void player_update(sf::Time time, 
                 sf::Event &event_queue, 
                 sf::RenderWindow &window, 
                 std::vector<Enemy*> &enemies,
                 int &stateNum);
-        ~Player();
+        void playerDeath(int &stateNum, sf::RenderWindow &window);
         void hit(std::vector<Enemy*> Enemy);
         //void jump();
     private:
         Sword sword;
-        sf::Clock timer;
 
 };
 

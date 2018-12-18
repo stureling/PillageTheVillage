@@ -2,7 +2,7 @@
 //CONSTRUCTORS
 //ENTITY
 Entity::Entity(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture* texture)
-    :speed{speed}, hp{hp}, scale{scale}
+    :speed{speed}, hp{hp}, scale{scale}, timer{}, immunity_timer{}, marked_for_destruction{false}
 {
     setTexture(*texture);
     setOrigin(sf::Vector2f{(getLocalBounds().width / 2.f), getLocalBounds().height});
@@ -58,9 +58,10 @@ void Enemy::update(sf::Vector2f player_pos, sf::Time tick)
 
 void Enemy::hit(int attack_type)
 {
-    if (attack_type != immunity)
+    if( attack_type != immunity && timer.getElapsedTime().asSeconds() > 0.5f )
     {
         hp -= 1;
+        timer.restart();
     }
 }
 
@@ -86,6 +87,7 @@ void Player::hit(std::vector<Enemy*> enemies)
             }
             move(-knockback); 
             c->move(2.f * knockback); 
+            hp -= 1;
         }
     } 
 }
@@ -129,13 +131,13 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && getPosition().x > getGlobalBounds().width / 2)
     {
         setScale(-scale.x, scale.y);
-        move(speed * (getScale().x / 0.3f) * time.asSeconds() );
+        move(-speed * time.asSeconds() );
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && getPosition().x < window.getSize().x - getGlobalBounds().width / 2)
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && getPosition().x < 1920 - getGlobalBounds().width / 2)
     {
         setScale(scale);
-        move(speed * (getScale().x / 0.3f) * time.asSeconds() );
+        move(speed * time.asSeconds() );
     }
 
     sword.update(time, enemies, this);
@@ -184,11 +186,21 @@ void Sword::update(sf::Time tick, std::vector<Enemy*> enemies, sf::Sprite* holde
 
 void Sword::strike_enemies(std::vector<Enemy*> enemies)
 {
-    for (Enemy* c : enemies) 
+    if (enemies.size() > 0)
     {
-        if (getGlobalBounds().intersects(c->getGlobalBounds()))
+        for (Enemy* c : enemies) 
         {
-            c->hit(attack_mode);
+            if (getGlobalBounds().intersects(c->getGlobalBounds()))
+            {
+                c->hit(attack_mode);
+                sf::Vector2f knockback{10.f, 0.f};
+                if (c->getPosition().x < getPosition().x) 
+                {
+                    knockback *= -1.f;
+                }
+                move(-knockback); 
+                c->move(2.f * knockback); 
+            }
         }
     }
 }
@@ -245,3 +257,4 @@ void Sword::heavy_attack(sf::Time tick, std::vector<Enemy*> enemies, float orien
     }
 }
 
+//KNIGHT FUNCTIONS
