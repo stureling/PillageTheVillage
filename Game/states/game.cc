@@ -43,7 +43,6 @@ void Engine::switchMenu(sf::RenderWindow &window, int &stateNum)
 {
     sf::Event event{};
     sf::Texture bg{bgs.at("Menu")};
-    sf::Sprite bag;
     MenuState menu{bg};
 
     while(stateNum == 1) {
