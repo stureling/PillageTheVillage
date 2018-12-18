@@ -51,11 +51,11 @@ void Engine::run()
 }
 //SWITCH
 void Engine::switchMenu(sf::RenderWindow &window, int &stateNum)
-{
-  /**\brief The function responsible for creating and switching to MenuState.
+    /**\brief The function responsible for creating and switching to MenuState.
    *
    *Creates the MenuState and sets it texture by using Engine's map of textures. While the state is active the MenuState's update function is run.
    */
+{
     sf::Event event{};
     sf::Texture bg{bgs.at("Menu")};
     sf::Sprite bag;
@@ -68,11 +68,11 @@ void Engine::switchMenu(sf::RenderWindow &window, int &stateNum)
     }
 }
 void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
-{
   /**\brief The function responsible for creating and switching to PlayState.
    *
    *Creates the PlayState and sets it texture by using Engine's map of textures. While the state is active the PlayState's update function is run.
    */
+{
     PlayState playstate{bgs.at("Play"), window};
 
     sf::Texture player_tex, peasant_tex, knight_tex, sword_tex, heart_tex;
@@ -111,11 +111,11 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
 
 }
 void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
-{
   /**\brief The function responsible for creating and switching to GameOverState.
    *
    *Creates the GameOverState and sets it texture by using Engine's map of textures. While the state is active the GameOverState's update function is run.
    */
+{
     sf::Event event{};
     sf::Texture bg{bgs.at("GO")};
     GameOver g{bg, window};
@@ -126,11 +126,11 @@ void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
 }
 
 void Engine::switchWin(sf::RenderWindow &window, int &stateNum)
-{
   /**\brief The function responsible for creating and switching to WinState.
    *
    *Creates the WinState and sets it texture by using Engine's map of textures. While the state is active the WinState's update function is run.
    */
+{
     sf::Event event{};
     sf::Texture bg{bgs.at("Win")};
     WinState w{bg, window};
@@ -142,11 +142,11 @@ void Engine::switchWin(sf::RenderWindow &window, int &stateNum)
 
 //STATE CONSTRUCTOR
 State::State(sf::Texture &background, sf::RenderWindow &window)
-{
   /**\brief State's constructor. 
    *
    *Sets texture for the background sprite and causes the dimensionens of the window to keep a ratio of 16:9 regardless oc scaling.
    */
+{
     sf::Vector2u valid_aspect{window.getSize().x, (window.getSize().x / 18) * 10};
     window.setSize(valid_aspect);
     bg.setTexture(background);
@@ -292,3 +292,7 @@ void PlayState::setPlayer(Player* entity) //WHAT DOES THIS DOOO?
 {
     player = entity;
 }
+
+//PLAYFIELD
+Playfield::Playfield()
+{}
