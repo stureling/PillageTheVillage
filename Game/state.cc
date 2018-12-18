@@ -113,6 +113,8 @@ void Engine::switchWin(sf::RenderWindow &window, int &stateNum) {
 //STATE CONSTRUCTOR
 State::State(sf::Texture &background, sf::RenderWindow &window)
 {
+    sf::Vector2u valid_aspect{window.getSize().x, (window.getSize().x / 18) * 10};
+    window.setSize(valid_aspect);
     bg.setTexture(background);
 }
 MenuState::MenuState(sf::Texture &background, sf::RenderWindow &window)
@@ -185,19 +187,22 @@ void PlayState::update(sf::Time time,
     window_resize(window);
     window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
-    player->player_update(time, event, window, enemies, stateNum);
     player->hit(enemies);
+    player->player_update(time, event, window, enemies, stateNum);
     for(Enemy* e : enemies)
     {
         e->update(player->getPosition(), time);
         window.draw(*e);
     }
-    enemies.erase(
-    std::remove_if(
-        enemies.begin(),
-        enemies.end(),
-        [](Enemy* const & c) { return c->get_hp() <= 0; }),
-    enemies.end());
+    enemies.erase(std::remove_if(
+                enemies.begin(),
+                enemies.end(),
+                [](Enemy* const & c) { return c->get_hp() <= 0; }),
+                enemies.end());
+    if (enemies.size() == 0)
+    {
+        stateNum =4;
+    }
 }
 //STATE FUNCTIONS
 void State::window_resize(sf::RenderWindow &window)

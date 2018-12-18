@@ -62,6 +62,7 @@ void Enemy::hit(int attack_type)
     {
         hp -= 1;
         timer.restart();
+        std::cout << "Hit!" << std::endl;
     }
 }
 
@@ -87,7 +88,11 @@ void Player::hit(std::vector<Enemy*> enemies)
             }
             move(-knockback); 
             c->move(2.f * knockback); 
-            hp -= 1;
+            if (immunity_timer.getElapsedTime().asSeconds() > 2 )
+            {
+                hp -= 1;
+                immunity_timer.restart();
+            }
         }
     } 
 }
@@ -115,14 +120,13 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
                 && (event_queue.key.code == sf::Keyboard::J)
                 && sword.attack_mode == 0)
         {
-            std::cout << "Light attack" << std::endl;
             sword.attack_mode = 1;
+            sword.timer.restart();
         }
         else if ((event_queue.type == sf::Event::KeyPressed) 
                 && (event_queue.key.code == sf::Keyboard::K)
                 && sword.attack_mode == 0)
         {
-            std::cout << "Heavy attack" << std::endl; 
             sword.attack_mode = 2;
             sword.timer.restart();
         }
@@ -144,6 +148,10 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
     hit(enemies);
     window.draw(sword);
     window.draw(*this);
+    if( hp <= 0 )
+    {
+        stateNum = 3;
+    }
 }
 
 //SWORD FUNCTIONS
@@ -208,9 +216,9 @@ void Sword::strike_enemies(std::vector<Enemy*> enemies)
 void Sword::light_attack(sf::Time tick, std::vector<Enemy*> enemies, float orientation)
 {
     float animation_time{timer.getElapsedTime().asSeconds()};
-    if (animation_time < 0.1f)
+    if (animation_time < 0.03f)
     {
-        setRotation(animation_time * 450.f * orientation);
+        setRotation(animation_time * (45.f / 0.03f) * orientation);
         strike_enemies(enemies);
     }
     else
