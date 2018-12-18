@@ -82,26 +82,30 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
     sword_tex.loadFromFile("static/textures/Sword-1.png");
     heart_tex.loadFromFile("static/textures/heart.png");
 
+    sf::Font point_font{};
+    point_font.loadFromFile("static/fonts/Hack-Bold.ttf");
+
     sf::Vector2f scale{0.3f, 0.3f};
-    float playheight{770};
+    float playheight{730};
 
     Player p{3, sf::Vector2f{500.f, 0.f}, sf::Vector2f{200.f, playheight}, scale, player_tex, sword_tex, heart_tex};
     Peasant e{sf::Vector2f{50.f, 0.f}, sf::Vector2f{600.f, playheight}, scale, peasant_tex};
     Peasant e1{sf::Vector2f{50.f, 0.f}, sf::Vector2f{650.f, playheight}, scale, peasant_tex};
-    Knight k{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{10.f, playheight}, scale, knight_tex};
-    Knight k1{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{10.f, playheight}, scale, knight_tex};
+    Knight k{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{10.f, playheight}, scale, knight_tex, sword_tex};
 
     playstate.setPlayer(&p);
     playstate.addEnemy(&e);
     playstate.addEnemy(&e1);
     playstate.addEnemy(&k);
-    playstate.addEnemy(&k1);
     sf::Clock clock;
     sf::Event event{};
+    sf::Text score{"", point_font, 50};
+    score.setPosition(1500.f, 850.f);
+    score.setScale(2.f, 2.f);
     while(stateNum == 2)
     {
         sf::Time elapsed = clock.restart();
-        playstate.update(elapsed, event, window, stateNum);
+        playstate.update(elapsed, event, window, stateNum, score);
         window.display();
     }
 
@@ -157,7 +161,7 @@ WinState::WinState(sf::Texture &background, sf::RenderWindow &window)
     :State{background, window}{}
 
 PlayState::PlayState(sf::Texture &background, sf::RenderWindow &window)
-    :State{background, window}{}
+    :State{background, window}, total_points{}{}
 
 //UPDATE
 void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
@@ -217,7 +221,7 @@ void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
     }
 }
 
-void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window, int &stateNum)
+void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window, int &stateNum, sf::Text &score)
     /** \brief Detta är en kort beskrivning.
      *
      * Detta är en detaljerad kommentar
@@ -232,12 +236,18 @@ void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window
     {
         e->update(player->getPosition(), time);
         window.draw(*e);
+        if(e->get_hp() <= 0)
+        {
+            total_points += e->get_points();
+        }
     }
     enemies.erase(std::remove_if(
                 enemies.begin(),
                 enemies.end(),
                 [](Enemy* const & c) { return c->get_hp() <= 0; }),
                 enemies.end());
+    score.setString(std::to_string(total_points));
+    window.draw(score);
     if (enemies.size() == 0)
     {
         stateNum =4;

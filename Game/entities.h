@@ -21,12 +21,14 @@ class Entity : public sf::Sprite
 class Enemy : public Entity
 {
     public:
-        Enemy(int hp, int immunity, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
+        Enemy(int hp, int immunity, unsigned points, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
         void hit(int attack_type);
         void update(sf::Vector2f player_pos, sf::Time tick);
         int get_hp();
+        unsigned get_points();
     protected:
         int immunity;
+        unsigned points;
 };
 
 class Sword : public sf::Sprite
@@ -34,7 +36,7 @@ class Sword : public sf::Sprite
     friend class Player;
     friend class Knight;
     public:
-        Sword(sf::Vector2f scale, sf::Texture &texture);
+        Sword(sf::Vector2f scale, sf::Texture &texture, float speed);
         void update(sf::Time tick, 
                 std::vector<Enemy*> enemies, 
                 Sprite* holder);
@@ -44,6 +46,7 @@ class Sword : public sf::Sprite
     private:
         int attack_mode;
         sf::Clock timer;
+        float speed;
 
 };
 
@@ -66,7 +69,7 @@ class Player : public Entity
         void draw_player(sf::RenderWindow &window);
         void process_input( sf::Event &event_queue, int &stateNum, sf::RenderWindow &window, sf::Time tick);
         void player_death(int &stateNum, sf::RenderWindow &window);
-        //void jump();
+        void jump(sf::Time tick);
     private:
         Sword sword;
         sf::Sprite health;
@@ -80,8 +83,11 @@ class Knight : public Enemy
                 sf::Vector2f speed, 
                 sf::Vector2f position, 
                 sf::Vector2f scale, 
-                sf::Texture &texture);
+                sf::Texture &texture,
+                sf::Texture &sword_t);
         //void update(sf::Vector2f player_pos, sf::Time tick) override;
+    private:
+        Sword sword;
 };
 
 class Peasant : public Enemy

@@ -69,10 +69,12 @@ class PlayState : public State
         void update(sf::Time time, 
                 sf::Event &event, 
                 sf::RenderWindow &window,
-                int &stateNum);
+                int &stateNum,
+                sf::Text &score);
     private:
         std::vector<Enemy*> enemies;
         Player* player;
+        unsigned total_points;
 };
 
 #endif

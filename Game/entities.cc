@@ -11,8 +11,8 @@ Entity::Entity(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f s
 }
 
 //SWORD
-Sword::Sword(sf::Vector2f scale, sf::Texture &texture)
-    :attack_mode{false}
+Sword::Sword(sf::Vector2f scale, sf::Texture &texture, float speed = 1)
+    :attack_mode{false}, speed{speed}
 {
     setOrigin(sf::Vector2f{15.f, 336.f});
     setTexture(texture);
@@ -26,16 +26,16 @@ Player::Player(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f s
 Player::~Player() = default;
 
 //ENEMY
-Enemy::Enemy(int hp,int immunity, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture)
-    :Entity{hp, speed, position, scale, texture}, immunity{immunity}{}
+Enemy::Enemy(int hp,int immunity, unsigned points, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture)
+    :Entity{hp, speed, position, scale, texture}, immunity{immunity}, points{points}{}
 
 //PEASANT
 Peasant::Peasant(sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture)
-    :Enemy{1, 0, speed, position, scale, texture}{}
+    :Enemy{1, 0, 50, speed, position, scale, texture}{}
 
 //KNIGHT
-Knight::Knight(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture)
-    :Enemy{hp, 1, speed, position, scale, texture}{}
+Knight::Knight(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture, sf::Texture &sword_t)
+    :Enemy{hp, 1, 150, speed, position, scale, texture}, sword{scale, sword_t, 1.5f}{}
 
 
 
@@ -83,6 +83,14 @@ int Enemy::get_hp()
     return hp;
 }
 
+unsigned Enemy::get_points()
+    /** \brief Detta är en kort beskrivning.
+     *
+     * Detta är en detaljerad kommentar
+     */
+{
+    return points;
+}
 
 //PLAYER FUNCTIONS
 
@@ -155,7 +163,7 @@ void Player::draw_player(sf::RenderWindow &window)
     for(int i{}; i < hp; i++)
     {
         health.setScale(0.5f, 0.5f);
-        health.setPosition((100.f * i ), 800.f);
+        health.setPosition((120.f * i ), 800.f);
         window.draw(health);
     }
 
@@ -179,7 +187,7 @@ void Player::process_input( sf::Event &event_queue, int &stateNum, sf::RenderWin
         }
         else if ((event_queue.type == sf::Event::KeyPressed) 
                 && (event_queue.key.code == sf::Keyboard::Space)
-                && getPosition().y == 200.f)
+                && timer.getElapsedTime().asSeconds() > 1.f)
         {
             std::cout << "Jump" << std::endl; 
         }
@@ -210,6 +218,24 @@ void Player::process_input( sf::Event &event_queue, int &stateNum, sf::RenderWin
         setScale(scale);
         move(speed * tick.asSeconds() );
     }
+
+}
+
+void Player::player_death(int &stateNum, sf::RenderWindow &window)
+    /** \brief Detta är en kort beskrivning.
+     *
+     * Detta är en detaljerad kommentar
+     */
+{
+    
+}
+
+void Player::jump(sf::Time tick)
+    /** \brief Detta är en kort beskrivning.
+     *
+     * Detta är en detaljerad kommentar
+     */
+{
 
 }
 
@@ -281,9 +307,10 @@ void Sword::strike_enemies(std::vector<Enemy*> enemies)
 }
 
 void Sword::light_attack(sf::Time tick, std::vector<Enemy*> enemies, float orientation)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief The sword swings back and forth quickly.
      *
-     * Detta är en detaljerad kommentar
+     * The sword swings back and forth between 0 and 45 degrees and checks for collision with enemies relative to the holder.
+     * If collision with an enemy-object occurs during the forward swing a function to deal damage to the object is called.
      */
 {
     float animation_time{timer.getElapsedTime().asSeconds()};
@@ -300,12 +327,15 @@ void Sword::light_attack(sf::Time tick, std::vector<Enemy*> enemies, float orien
 }
 
 void Sword::heavy_attack(sf::Time tick, std::vector<Enemy*> enemies, float orientation)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief The sword moves in a predetermined pattern relative to the holder
      *
-     * Detta är en detaljerad kommentar
+     * The sword follows a specific animation pattern relative to the holders position and scale.
+     * During the attack-frames, when the sword is thrust forward, the function calls the strike function to resolve potential hits.
+     * To change the total time of the animation; tweak the swords speed variable.
+     *
      */
 {
-    if (timer.getElapsedTime().asSeconds() < 1.f)
+    if (timer.getElapsedTime().asSeconds() < 1.f * speed)
     {
         float new_origin_x{timer.getElapsedTime().asSeconds() * 255.f + 15.f};
         float new_origin_y{getOrigin().x * -1.423728813559322f + 357.35593220338984f};
