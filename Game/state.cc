@@ -19,7 +19,7 @@ Engine::Engine()
 void Engine::run()
 /**\brief The function that initiates the game and switches between states.
  *
- *Adds all relevant background textures to its map. Uses stateNum to determine which state should be active. Calls the appropriate switch-function to create and run the desired state.
+ *Adds all relevant background textures to its map. Uses stateNum to determine which state should be active. Calls the appropriate switch-function to create andrun the desired state.
  */
 {
     int stateNum{1};
@@ -27,7 +27,7 @@ void Engine::run()
     menu_tex.loadFromFile("static/bg/menu.png");
     bgs.emplace(std::make_pair(std::string("Menu"), sf::Texture (menu_tex)));
 
-    play_tex.loadFromFile("static/bg/playfield.png");
+    play_tex.loadFromFile("static/bg/playfieldwithframe.png");
     bgs.emplace(std::make_pair(std::string("Play"), sf::Texture (play_tex)));
 
     go_tex.loadFromFile("static/bg/go.png");
@@ -75,20 +75,21 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
    */
     PlayState playstate{bgs.at("Play"), window};
 
-    sf::Texture player_tex, peasant_tex, knight_tex, sword_tex;
+    sf::Texture player_tex, peasant_tex, knight_tex, sword_tex, heart_tex;
     player_tex.loadFromFile("static/textures/player.png");
     peasant_tex.loadFromFile("static/textures/peasant.png");
     knight_tex.loadFromFile("static/textures/knight.png");
     sword_tex.loadFromFile("static/textures/Sword-1.png");
+    heart_tex.loadFromFile("static/textures/heart.png");
 
     sf::Vector2f scale{0.3f, 0.3f};
     float playheight{770};
 
-    Player p{3, sf::Vector2f{500.f, 0.f}, sf::Vector2f{200.f, playheight}, scale, &player_tex, &sword_tex};
-    Peasant e{sf::Vector2f{50.f, 0.f}, sf::Vector2f{600.f, playheight}, scale, &peasant_tex};
-    Peasant e1{sf::Vector2f{50.f, 0.f}, sf::Vector2f{650.f, playheight}, scale, &peasant_tex};
-    Knight k{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{10.f, playheight}, scale, &knight_tex};
-    Knight k1{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{10.f, playheight}, scale, &knight_tex};
+    Player p{3, sf::Vector2f{500.f, 0.f}, sf::Vector2f{200.f, playheight}, scale, player_tex, sword_tex, heart_tex};
+    Peasant e{sf::Vector2f{50.f, 0.f}, sf::Vector2f{600.f, playheight}, scale, peasant_tex};
+    Peasant e1{sf::Vector2f{50.f, 0.f}, sf::Vector2f{650.f, playheight}, scale, peasant_tex};
+    Knight k{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{10.f, playheight}, scale, knight_tex};
+    Knight k1{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{10.f, playheight}, scale, knight_tex};
 
     playstate.setPlayer(&p);
     playstate.addEnemy(&e);
@@ -117,6 +118,7 @@ void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
         window.display();
     }
 }
+<<<<<<< HEAD
 void Engine::switchWin(sf::RenderWindow &window, int &stateNum)
 {
   /**\brief The function responsible for creating and switching to WinState.
@@ -148,13 +150,15 @@ WinState::WinState(sf::Texture &background, sf::RenderWindow &window)
     :State{background, window}{}
 
 PlayState::PlayState(sf::Texture &background, sf::RenderWindow &window)
-    :State{background, window}
-{
-    bg.setPosition(0.f, -250.f);
-}
+    :State{background, window}{}
 
 //UPDATE
-void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) {
+void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
+    /** \brief Detta är en kort beskrivning.
+     *
+     * Detta är en detaljerad kommentar
+     */
+{
     window_resize(window);
     window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
@@ -172,7 +176,12 @@ void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &st
     }
 }
 
-void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) {
+void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
+    /** \brief Detta är en kort beskrivning.
+     *
+     * Detta är en detaljerad kommentar
+     */
+{
     window_resize(window);
     window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
@@ -188,7 +197,12 @@ void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
     }
 }
 
-void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) {
+void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
+    /** \brief Detta är en kort beskrivning.
+     *
+     * Detta är en detaljerad kommentar
+     */
+{
     window_resize(window);
     window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
@@ -200,10 +214,11 @@ void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
     }
 }
 
-void PlayState::update(sf::Time time, 
-        sf::Event &event, 
-        sf::RenderWindow &window,
-        int &stateNum)
+void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window, int &stateNum)
+    /** \brief Detta är en kort beskrivning.
+     *
+     * Detta är en detaljerad kommentar
+     */
 {
     window_resize(window);
     window.clear(sf::Color(0, 0, 0, 255));
@@ -227,6 +242,10 @@ void PlayState::update(sf::Time time,
 }
 //STATE FUNCTIONS
 void State::window_resize(sf::RenderWindow &window)
+    /** \brief Detta är en kort beskrivning.
+     *
+     * Detta är en detaljerad kommentar
+     */
 {
     sf::Vector2u valid_aspect{window.getSize().x, (window.getSize().x / 18) * 10};
     window.setSize(valid_aspect);
@@ -236,11 +255,19 @@ void State::window_resize(sf::RenderWindow &window)
 
 //PLAYSTATE FUNCTIONS
 void PlayState::addEnemy(Enemy* enemy)
+    /** \brief Detta är en kort beskrivning.
+     *
+     * Detta är en detaljerad kommentar
+     */
 {
     enemies.push_back(enemy);
 }
 
 void PlayState::setPlayer(Player* entity)
+    /** \brief Detta är en kort beskrivning.
+     *
+     * Detta är en detaljerad kommentar
+     */
 {
     player = entity;
 }

@@ -3,11 +3,12 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <iterator>
+#include <math.h>
 
 class Entity : public sf::Sprite
 {
     public:
-        Entity(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
+        Entity(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
     protected:
         sf::Vector2f const speed; 
         int hp;
@@ -20,7 +21,7 @@ class Entity : public sf::Sprite
 class Enemy : public Entity
 {
     public:
-        Enemy(int hp, int immunity, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
+        Enemy(int hp, int immunity, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
         void hit(int attack_type);
         void update(sf::Vector2f player_pos, sf::Time tick);
         int get_hp();
@@ -33,7 +34,7 @@ class Sword : public sf::Sprite
     friend class Player;
     friend class Knight;
     public:
-        Sword(sf::Vector2f scale, sf::Texture* texture);
+        Sword(sf::Vector2f scale, sf::Texture &texture);
         void update(sf::Time tick, 
                 std::vector<Enemy*> enemies, 
                 Sprite* holder);
@@ -52,19 +53,23 @@ class Player : public Entity
         Player(int hp, sf::Vector2f speed, 
                 sf::Vector2f position, 
                 sf::Vector2f scale, 
-                sf::Texture* player_t, 
-                sf::Texture* sword_t);
+                sf::Texture &player_t, 
+                sf::Texture &sword_t,
+                sf::Texture &health);
         ~Player();
+        void hit(std::vector<Enemy*> Enemy);
         void player_update(sf::Time time, 
                 sf::Event &event_queue, 
                 sf::RenderWindow &window, 
                 std::vector<Enemy*> &enemies,
                 int &stateNum);
-        void playerDeath(int &stateNum, sf::RenderWindow &window);
-        void hit(std::vector<Enemy*> Enemy);
+        void draw_player(sf::RenderWindow &window);
+        void process_input( sf::Event &event_queue, int &stateNum, sf::RenderWindow &window, sf::Time tick);
+        void player_death(int &stateNum, sf::RenderWindow &window);
         //void jump();
     private:
         Sword sword;
+        sf::Sprite health;
 
 };
 
@@ -75,14 +80,14 @@ class Knight : public Enemy
                 sf::Vector2f speed, 
                 sf::Vector2f position, 
                 sf::Vector2f scale, 
-                sf::Texture*);
+                sf::Texture &texture);
         //void update(sf::Vector2f player_pos, sf::Time tick) override;
 };
 
 class Peasant : public Enemy
 {
     public:
-        Peasant(sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture*);
+        Peasant(sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
 };
 
 #endif
