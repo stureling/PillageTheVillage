@@ -11,7 +11,8 @@ Entity::Entity(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f s
 }
 
 //SWORD
-Sword::Sword(sf::Vector2f scale, sf::Texture &texture, float speed = 1)
+template <typename T>
+Sword<T>::Sword(sf::Vector2f scale, sf::Texture &texture, float speed)
     :attack_mode{false}, speed{speed}
 {
     setOrigin(sf::Vector2f{15.f, 336.f});
@@ -51,36 +52,32 @@ int Entity::get_hp()
 }
 
 //ENEMY FUCNTIONS
-void Enemy::update(sf::Vector2f player_pos, sf::Time tick)
+void Enemy::update(Entity* player, sf::RenderWindow &window, sf::Time tick)
     /** \brief Moves the enemies towards the player character.
      *
-     * Moves the enemies towards the player character based on the time elapsed sincecthe last frame.
+     * Moves the enemies towards the player character based on the time elapsed sincecthe last update.
      */
 {
-    //DRY
-    if (player_pos.x > getPosition().x)
+    float orientation{1};
+    if (player->getPosition().x < getPosition().x)
     {
-        setScale(scale);
-        move(speed / getScale().y * tick.asSeconds());
+        orientation *= -1;
     }
-    else
-    {
-        setScale(-scale.x, scale.y);
-        move(-speed / getScale().y * tick.asSeconds());
-    }
+    setScale(scale.x * orientation, scale.y);
+    move(speed * orientation / getScale().y * tick.asSeconds());
+    window.draw(*this);
 }
 
 void Enemy::hit(int attack_type)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief Removes health from the object if it is not immune.
      *
-     * Detta är en detaljerad kommentar
+     * Removes health from the object if it is not immune.
      */
 {
     if( attack_type != immunity && timer.getElapsedTime().asSeconds() > 0.5f )
     {
         hp -= 1;
         timer.restart();
-        std::cout << "Hit!" << std::endl;
     }
 }
 
@@ -96,7 +93,7 @@ unsigned Enemy::get_points()
 
 //PLAYER FUNCTIONS
 
-void Player::hit(std::vector<Enemy*> enemies)
+void Player::collision(std::vector<Enemy*> enemies)
     /** \brief Checks if the player character is colliding with an enemy and updates the player accordingly.
      *
      * Checks if any enemy intersects with the player character if it isn't currently immune.
@@ -126,6 +123,19 @@ void Player::hit(std::vector<Enemy*> enemies)
         }
     }
 }
+void Player::hit(int attack_mode)
+    /** \brief Detta är en kort beskrivning.
+     *
+     * 
+     */
+{
+    if( immunity_timer.getElapsedTime().asSeconds() > 1.5f)
+    {
+        hp -= 1;
+        immunity_timer.restart();
+    }
+    
+}
 
 
 void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window, std::vector<Enemy*> &enemies, int &stateNum)
@@ -136,7 +146,7 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
 {
     process_input(event_queue, stateNum, window, time);
     sword.update(enemies, this);
-    hit(enemies);
+    collision(enemies);
     window.draw(sword);
     draw_player(window);
     if( hp <= 0 )
@@ -244,8 +254,8 @@ void Player::jump(sf::Time tick)
 }
 
 //SWORD FUNCTIONS
-
-void Sword::update(std::vector<Enemy*> enemies, sf::Sprite* holder)
+template <typename T>
+void Sword<T>::update(std::vector<T> enemies, Entity* holder)
     /** \brief Updates the swords position and scale relative to its holder and calls attack functions if the sword is in an attack mode.
      *
     * Updates the swords position and scale relative to its holder and calls attack functions if the sword is in an attack mode. 
@@ -256,12 +266,8 @@ void Sword::update(std::vector<Enemy*> enemies, sf::Sprite* holder)
     float width{holder->getGlobalBounds().width / 2.f - 5.f};
 
     setScale(holder->getScale());
-    float orientation{1.f};
+    float orientation{holder->getScale().x / 0.3f};
 
-    if (getScale().x < 0)
-    {
-        orientation *= -1.f;
-    }    
     setPosition(holder->getPosition().x + width * orientation, height);
     
     if (attack_mode != 0)
@@ -286,7 +292,8 @@ void Sword::update(std::vector<Enemy*> enemies, sf::Sprite* holder)
     }
 }
 
-void Sword::strike_enemies(std::vector<Enemy*> enemies)
+template <typename T>
+void Sword<T>::strike(std::vector<T> enemies)
     /** \brief Detects collision during attack.
      *
      * Goes through a list of enemies and checks collision.
@@ -295,7 +302,7 @@ void Sword::strike_enemies(std::vector<Enemy*> enemies)
 {
     if (enemies.size() > 0)
     {
-        for (Enemy* c : enemies) 
+        for (T c : enemies) 
         {
             if (getGlobalBounds().intersects(c->getGlobalBounds()))
             {
@@ -312,7 +319,8 @@ void Sword::strike_enemies(std::vector<Enemy*> enemies)
     }
 }
 
-void Sword::light_attack(std::vector<Enemy*> enemies, float orientation)
+template <typename T>
+void Sword<T>::light_attack(std::vector<T> enemies, float orientation)
     /** \brief The sword swings back and forth quickly.
      *
      * The sword swings back and forth between 0 and 45 degrees and checks for collision with enemies relative to the holder.
@@ -323,7 +331,7 @@ void Sword::light_attack(std::vector<Enemy*> enemies, float orientation)
     if (animation_time < 0.03f)
     {
         setRotation(animation_time * (45.f / 0.03f) * orientation);
-        strike_enemies(enemies);
+        strike(enemies);
     }
     else
     {
@@ -332,7 +340,8 @@ void Sword::light_attack(std::vector<Enemy*> enemies, float orientation)
     }
 }
 
-void Sword::heavy_attack(std::vector<Enemy*> enemies, float orientation)
+template <typename T>
+void Sword<T>::heavy_attack(std::vector<T> enemies, float orientation)
     /** \brief The sword moves in a predetermined pattern relative to the holder
      *
      * The sword follows a specific animation pattern relative to the holders position and scale.
@@ -359,7 +368,7 @@ void Sword::heavy_attack(std::vector<Enemy*> enemies, float orientation)
             float new_origin_x{getOrigin().x - timer.getElapsedTime().asSeconds() * 20.f};
             float new_origin_y{getOrigin().x * -1.423728813559322f + 357.35593220338984f};
             setOrigin(new_origin_x, new_origin_y);
-            strike_enemies(enemies);
+            strike(enemies);
         }
         setRotation(45 * orientation);
     }
@@ -373,3 +382,23 @@ void Sword::heavy_attack(std::vector<Enemy*> enemies, float orientation)
 }
 
 //KNIGHT FUNCTIONS
+void Knight::update(Entity* player, sf::RenderWindow &window, sf::Time tick)
+{
+    float orientation{1};
+    if (player->getPosition().x < getPosition().x  && getPosition().y == player->getPosition().y)
+    {
+        orientation *= -1;
+    }
+    setScale(scale.x * orientation, scale.y);
+    move(speed * orientation / getScale().y * tick.asSeconds());
+    if( std::abs(player->getPosition().x - getPosition().x) < getGlobalBounds().width / 2  + sword.getGlobalBounds().width && sword.attack_mode == 0)
+    {
+        sword.attack_mode = 2;
+    }
+    std::vector<Player*> v;
+    Player* p = dynamic_cast<Player *>(player);
+    v.push_back(p);
+    sword.update(v, this);
+    window.draw(*this);
+    window.draw(sword);
+}

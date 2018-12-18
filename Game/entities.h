@@ -24,23 +24,24 @@ class Enemy : public Entity
     public:
         Enemy(int hp, int immunity, unsigned points, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
         void hit(int attack_type);
-        void update(sf::Vector2f player_pos, sf::Time tick);
+        void virtual update(Entity* player, sf::RenderWindow &window, sf::Time tick);
         unsigned get_points();
     protected:
         int immunity;
         unsigned points;
 };
-
+template <typename T>
 class Sword : public sf::Sprite
 {
     friend class Player;
     friend class Knight;
     public:
-        Sword(sf::Vector2f scale, sf::Texture &texture, float speed);
-        void update(std::vector<Enemy*> enemies, Sprite* holder);
-        void strike_enemies(std::vector<Enemy*> enemies);
-        void light_attack(std::vector<Enemy*> enemies, float orientation);
-        void heavy_attack(std::vector<Enemy*> enemies, float orientation);
+        Sword(sf::Vector2f scale, sf::Texture &texture, float speed = 1);
+        void update(std::vector<T> enemies, 
+                Entity* holder);
+        void strike(std::vector<T> enemies);
+        void light_attack(std::vector<T> enemies, float orientation);
+        void heavy_attack(std::vector<T> enemies, float orientation);
     private:
         int attack_mode;
         sf::Clock timer;
@@ -58,7 +59,8 @@ class Player : public Entity
                 sf::Texture &sword_t,
                 sf::Texture &health);
         ~Player();
-        void hit(std::vector<Enemy*> Enemy);
+        void collision(std::vector<Enemy*> Enemy);
+        void hit(int attack_mode);
         void player_update(sf::Time time, 
                 sf::Event &event_queue, 
                 sf::RenderWindow &window, 
@@ -69,7 +71,7 @@ class Player : public Entity
         void player_death(int &stateNum, sf::RenderWindow &window);
         void jump(sf::Time tick);
     private:
-        Sword sword;
+        Sword<Enemy*> sword;
         sf::Sprite health;
 
 };
@@ -83,9 +85,9 @@ class Knight : public Enemy
                 sf::Vector2f scale, 
                 sf::Texture &texture,
                 sf::Texture &sword_t);
-        //void update(sf::Vector2f player_pos, sf::Time tick) override;
+        void update(Entity* player, sf::RenderWindow &window, sf::Time tick) override;
     private:
-        Sword sword;
+        Sword<Player*> sword;
 };
 
 class Peasant : public Enemy

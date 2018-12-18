@@ -232,12 +232,18 @@ void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window
     window_resize(window);
     window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
-    player->hit(enemies);
     player->player_update(time, event, window, enemies, stateNum);
     for(Enemy* e : enemies)
     {
-        e->update(player->getPosition(), time);
-        window.draw(*e);
+        Knight* k = dynamic_cast<Knight*>(e);
+        if(k)
+        {
+            k->update(player, window, time);
+        }
+        else
+        {
+            e->update(player, window, time);
+        }
         if(e->get_hp() <= 0)
         {
             total_points += e->get_points();
