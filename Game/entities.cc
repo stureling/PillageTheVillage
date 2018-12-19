@@ -35,8 +35,8 @@ Peasant::Peasant(sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, 
     :Enemy{1, 0, 50, speed, position, scale, texture}{}
 
 //KNIGHT
-Knight::Knight(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture, sf::Texture &sword_t)
-    :Enemy{hp, 1, 150, speed, position, scale, texture}, sword{scale, sword_t, 1.5f}{}
+Knight::Knight(sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture, sf::Texture &sword_t)
+    :Enemy{2, 1, 150, speed, position, scale, texture}, sword{scale, sword_t, 1.5f}{}
 
 
 
@@ -84,7 +84,7 @@ unsigned Enemy::get_points()
 }
 
 //PLAYER FUNCTIONS
-void Player::collision(std::vector<Enemy*> enemies)
+void Player::collision(std::vector<std::shared_ptr<Enemy>> enemies)
     /** \brief Checks if the player character is colliding with an enemy and updates the player accordingly.
      *
      * Checks if any enemy intersects with the player character if it isn't currently immune.
@@ -93,18 +93,18 @@ void Player::collision(std::vector<Enemy*> enemies)
 {
     if( immunity_timer.getElapsedTime().asSeconds() > 1.5f)
     {
-        for (Entity* c : enemies) 
+        for(unsigned element{}; element < enemies.size() ; element++ )
         { 
-            if (getGlobalBounds().intersects(c->getGlobalBounds())) 
+            if (getGlobalBounds().intersects(enemies[element]->getGlobalBounds())) 
             {
 
                 sf::Vector2f knockback{10.f, 0.f};
-                if (c->getPosition().x < getPosition().x) 
+                if (enemies[element]->getPosition().x < getPosition().x) 
                 {
                     knockback *= -1.f;
                 }
                 move(-knockback); 
-                c->move(2.f * knockback); 
+                enemies[element]->move(2.f * knockback); 
                 hp -= 1;
                 immunity_timer.restart();
             }
@@ -126,7 +126,7 @@ void Player::hit(int attack_mode)
 }
 
 
-void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window, std::vector<Enemy*> &enemies, int &stateNum)
+void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWindow &window, std::vector<std::shared_ptr<Enemy>> &enemies, int &stateNum)
     /** \brief Updates the player character
      *
      * Calls subfunctions related to updating the player characters position, scale, health. Ends the playstate if the player's health reaches 0.
@@ -296,18 +296,18 @@ void Sword<T>::strike(std::vector<T> enemies)
 {
     if (enemies.size() > 0)
     {
-        for (T c : enemies) 
+        for(unsigned element{}; element < enemies.size() ; element++ )
         {
-            if (getGlobalBounds().intersects(c->getGlobalBounds()))
+            if (getGlobalBounds().intersects(enemies[element]->getGlobalBounds()))
             {
-                c->hit(attack_mode);
+                enemies[element]->hit(attack_mode);
                 sf::Vector2f knockback{10.f, 0.f};
-                if (c->getPosition().x < getPosition().x) 
+                if (enemies[element]->getPosition().x < getPosition().x) 
                 {
                     knockback *= -1.f;
                 }
                 move(-knockback); 
-                c->move(2.f * knockback); 
+                enemies[element]->move(2.f * knockback); 
             }
         }
     }
@@ -344,44 +344,48 @@ void Sword<T>::heavy_attack(std::vector<T> enemies, float orientation)
      *
      */
 {
+    float k{-1.423728813559322};
+    float m{357.35593220338984};
+    float max_rotation{45};
+    float origin_x{15.f};
     if (timer.getElapsedTime().asSeconds() < 1.f * speed)
     {
-        float new_origin_x{timer.getElapsedTime().asSeconds() / speed * 255.f + 15.f};
-        float new_origin_y{getOrigin().x * -1.423728813559322f + 357.35593220338984f};
+        float new_origin_x{timer.getElapsedTime().asSeconds() / speed * 255.f + origin_x};
+        float new_origin_y{getOrigin().x * k + m};
         setOrigin(new_origin_x, new_origin_y);
-        setRotation(45 * timer.getElapsedTime().asSeconds() / speed * orientation);
+        setRotation(max_rotation * timer.getElapsedTime().asSeconds() / speed * orientation);
     }
     else if (timer.getElapsedTime().asSeconds() > 1.f * speed && timer.getElapsedTime().asSeconds() < 1.5f * speed)
     {
-            setRotation(45 * orientation);
+            setRotation(max_rotation * orientation);
     }
     else if (timer.getElapsedTime().asSeconds() > 1.5f * speed && timer.getElapsedTime().asSeconds() < 2.5f * speed)
     {
-        if ( getOrigin().x > 15 )
+        if ( getOrigin().x > origin_x)
         {
             float new_origin_x{getOrigin().x - timer.getElapsedTime().asSeconds() * 20.f};
-            float new_origin_y{getOrigin().x * -1.423728813559322f + 357.35593220338984f};
+            float new_origin_y{getOrigin().x * k + m};
             setOrigin(new_origin_x, new_origin_y);
             strike(enemies);
         }
-        setRotation(45 * orientation);
+        setRotation(max_rotation * orientation);
     }
     else
     {
-        setOrigin(sf::Vector2f{15.f, 336.f});
-        setRotation(45 * orientation);
+        setOrigin(sf::Vector2f{origin_x, 336.f});
+        setRotation(max_rotation * orientation);
         attack_mode = 3;
         timer.restart();
     }
 }
 
 //KNIGHT FUNCTIONS
-void Knight::update(Entity* player, sf::RenderWindow &window, sf::Time tick)
+void Knight::update(Player* player, sf::RenderWindow &window, sf::Time tick)
     /** \brief Moves the Knight towards the Player object.
      *
      * Moves the Knight towards the Player object based on the time elapsed since the last update.
      * Triggers a heavy attack if the Player object is within reach.
-     * Draws itself and it's sword. 
+     * Draws itself and its sword. 
      *
      */
 {
@@ -392,16 +396,19 @@ void Knight::update(Entity* player, sf::RenderWindow &window, sf::Time tick)
     }
     setScale(scale.x * orientation, scale.y);
     move(speed * orientation / getScale().y * tick.asSeconds());
-    if( std::abs(player->getPosition().x - getPosition().x) < getGlobalBounds().width  + 
-            std::sqrt(std::pow(sword.getGlobalBounds().width, 2) + std::pow(sword.getGlobalBounds().height, 2 )) 
-            && sword.attack_mode == 0)
+
+    float distance_to_player{std::abs(player->getPosition().x - getPosition().x)};
+    double sword_range{getGlobalBounds().width  + 
+        std::sqrt(std::pow(sword.getGlobalBounds().width, 2) + 
+        std::pow(sword.getGlobalBounds().height, 2))};
+
+    if( distance_to_player < sword_range && sword.attack_mode == 0)
     {
         sword.attack_mode = 2;
         sword.timer.restart();
     }
     std::vector<Player*> v;
-    Player* p = dynamic_cast<Player *>(player);
-    v.push_back(p);
+    v.push_back(player);
     sword.update(v, this);
     window.draw(sword);
     window.draw(*this);
