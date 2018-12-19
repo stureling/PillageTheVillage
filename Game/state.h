@@ -60,8 +60,10 @@ public:
                 int &stateNum);
 };
 
+
 class PlayState : public State
 {
+    friend class Engine;
     public:
         PlayState(sf::Texture &background, sf::RenderWindow &window);
         void addEnemy(Enemy* entity);
@@ -70,18 +72,24 @@ class PlayState : public State
                 sf::Event &event, 
                 sf::RenderWindow &window,
                 int &stateNum,
-                sf::Text &score);
+                sf::Text &score,
+                std::vector<std::vector<Enemy*>> waves);
     private:
         std::vector<Enemy*> enemies;
         Player* player;
         unsigned total_points;
+        sf::Clock wave_timer;
+        unsigned current_wave;
 };
 
-class Playfield
+class Wave
 {
+    friend class PlayState;
     public:
-        Playfield();
-        std::map<sf::Time, std::vector<Enemy*>> wave;
+        Wave(sf::Vector2f p_speed,sf::Vector2f k_speed, float playheight, sf::Vector2f scale, sf::Texture &p_texture, sf::Texture &k_texture);
+        std::vector<std::vector<Enemy*>> waves;
+        
 };
+
 
 #endif

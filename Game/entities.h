@@ -24,7 +24,7 @@ class Enemy : public Entity
     public:
         Enemy(int hp, int immunity, unsigned points, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
         void hit(int attack_type);
-        void virtual update(Entity* player, sf::RenderWindow &window, sf::Time tick);
+        void update(Entity* player, sf::RenderWindow &window, sf::Time tick);
         unsigned get_points();
     protected:
         int immunity;
@@ -67,12 +67,16 @@ class Player : public Entity
                 std::vector<Enemy*> &enemies,
                 int &stateNum);
         void draw_player(sf::RenderWindow &window);
-        void process_input( sf::Event &event_queue, int &stateNum, sf::RenderWindow &window, sf::Time tick);
-        void player_death(int &stateNum, sf::RenderWindow &window);
-        void jump(sf::Time tick);
+        void process_input( sf::Event &event_queue, 
+                int &stateNum, 
+                sf::RenderWindow &window, 
+                sf::Time tick);
+        void jump();
     private:
         Sword<Enemy*> sword;
         sf::Sprite health;
+        bool jumping;
+        float playheight;
 
 };
 
@@ -85,7 +89,7 @@ class Knight : public Enemy
                 sf::Vector2f scale, 
                 sf::Texture &texture,
                 sf::Texture &sword_t);
-        void update(Entity* player, sf::RenderWindow &window, sf::Time tick) override;
+        void update(Entity* player, sf::RenderWindow &window, sf::Time tick);
     private:
         Sword<Player*> sword;
 };

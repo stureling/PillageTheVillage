@@ -22,7 +22,7 @@ Sword<T>::Sword(sf::Vector2f scale, sf::Texture &texture, float speed)
 
 //PLAYER
 Player::Player(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &player_t, sf::Texture &sword_t, sf::Texture &health)
-    :Entity(hp, speed, position, scale, player_t), sword{scale, sword_t}, health{health}{}
+    :Entity(hp, speed, position, scale, player_t), sword{scale, sword_t}, health{health}, jumping{false}, playheight{position.y}{}
 
 Player::~Player() = default;
 
@@ -43,10 +43,6 @@ Knight::Knight(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f s
 //FUNCTIONS
 //ENTITY FUNCTIONS
 int Entity::get_hp()
-    /** \brief Returns hp.
-     *
-     * Returns hp.
-     */
 {
     return hp;
 }
@@ -55,7 +51,7 @@ int Entity::get_hp()
 void Enemy::update(Entity* player, sf::RenderWindow &window, sf::Time tick)
     /** \brief Moves the enemies towards the player character.
      *
-     * Moves the enemies towards the player character based on the time elapsed sincecthe last update.
+     * Moves the enemies towards the player character based on the time elapsed since the last update.
      */
 {
     float orientation{1};
@@ -83,16 +79,11 @@ void Enemy::hit(int attack_type)
 
 
 unsigned Enemy::get_points()
-    /** \brief Returns points.
-     *
-     * Returns points.
-     */
 {
     return points;
 }
 
 //PLAYER FUNCTIONS
-
 void Player::collision(std::vector<Enemy*> enemies)
     /** \brief Checks if the player character is colliding with an enemy and updates the player accordingly.
      *
@@ -114,19 +105,16 @@ void Player::collision(std::vector<Enemy*> enemies)
                 }
                 move(-knockback); 
                 c->move(2.f * knockback); 
-                if (immunity_timer.getElapsedTime().asSeconds() > 1.5f )
-                {
-                    hp -= 1;
-                    immunity_timer.restart();
-                }
+                hp -= 1;
+                immunity_timer.restart();
             }
         }
     }
 }
 void Player::hit(int attack_mode)
-    /** \brief Detta är en kort beskrivning.
+    /** \brief Subtracts hp from the Player object if it's not immune.
      *
-     * 
+     * Subtracts hp from the Player object if it's not immune.
      */
 {
     if( immunity_timer.getElapsedTime().asSeconds() > 1.5f)
@@ -145,6 +133,10 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
      */
 {
     process_input(event_queue, stateNum, window, time);
+    if ( jumping == true )
+    {
+        jump();
+    }
     sword.update(enemies, this);
     collision(enemies);
     window.draw(sword);
@@ -202,9 +194,10 @@ void Player::process_input( sf::Event &event_queue, int &stateNum, sf::RenderWin
         }
         else if ((event_queue.type == sf::Event::KeyPressed) 
                 && (event_queue.key.code == sf::Keyboard::Space)
-                && timer.getElapsedTime().asSeconds() > 1.f)
+                && jumping == false)
         {
-            std::cout << "Jump" << std::endl; 
+            jumping = true;
+            timer.restart();
         }
         else if ((event_queue.type == sf::Event::KeyPressed) 
                 && (event_queue.key.code == sf::Keyboard::J)
@@ -235,21 +228,23 @@ void Player::process_input( sf::Event &event_queue, int &stateNum, sf::RenderWin
 
 }
 
-void Player::player_death(int &stateNum, sf::RenderWindow &window)
-    /** \brief Detta är en kort beskrivning.
+void Player::jump()
+    /** \brief Moves the Player object in the y-axis based on a timer.
      *
-     * Detta är en detaljerad kommentar
+     * The Player object is moved in the y-axis based on a timer. 
+     * The y-position is determined by a second-degree equation y = (x - 0)*(x - z)*a where x is the elapsed time since the jump started, z is the time when the jump is finished and a is the amplitude of the jump.
      */
 {
-    
-}
-
-void Player::jump(sf::Time tick)
-    /** \brief Detta är en kort beskrivning.
-     *
-     * Detta är en detaljerad kommentar
-     */
-{
+    float time_passed{timer.getElapsedTime().asSeconds()};
+    if (time_passed < 1.25f)
+    {
+        setPosition(getPosition().x, time_passed * (time_passed - 1.25f) * 600 + playheight);
+    }
+    else
+    {
+        setPosition(getPosition().x, playheight);
+        jumping = false;
+    }
 }
 
 //SWORD FUNCTIONS
@@ -257,7 +252,7 @@ template <typename T>
 void Sword<T>::update(std::vector<T> enemies, Entity* holder)
     /** \brief Updates the swords position and scale relative to its holder and calls attack functions if the sword is in an attack mode.
      *
-    * Updates the swords position and scale relative to its holder and calls attack functions if the sword is in an attack mode. 
+     * Updates the swords position and scale relative to its holder and calls attack functions if the sword is in an attack mode. 
      * 
      */
 {
@@ -382,15 +377,24 @@ void Sword<T>::heavy_attack(std::vector<T> enemies, float orientation)
 
 //KNIGHT FUNCTIONS
 void Knight::update(Entity* player, sf::RenderWindow &window, sf::Time tick)
+    /** \brief Moves the Knight towards the Player object.
+     *
+     * Moves the Knight towards the Player object based on the time elapsed since the last update.
+     * Triggers a heavy attack if the Player object is within reach.
+     * Draws itself and it's sword. 
+     *
+     */
 {
     float orientation{1};
-    if (player->getPosition().x < getPosition().x  && getPosition().y == player->getPosition().y)
+    if (player->getPosition().x < getPosition().x)
     {
         orientation *= -1;
     }
     setScale(scale.x * orientation, scale.y);
     move(speed * orientation / getScale().y * tick.asSeconds());
-    if( std::abs(player->getPosition().x - getPosition().x) < getGlobalBounds().width  + sword.getGlobalBounds().width && sword.attack_mode == 0)
+    if( std::abs(player->getPosition().x - getPosition().x) < getGlobalBounds().width  + 
+            std::sqrt(std::pow(sword.getGlobalBounds().width, 2) + std::pow(sword.getGlobalBounds().height, 2 )) 
+            && sword.attack_mode == 0)
     {
         sword.attack_mode = 2;
         sword.timer.restart();

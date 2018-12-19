@@ -9,7 +9,9 @@ Engine::Engine()
 : window{sf::VideoMode(1920, 1080), "Hang in there, bud"}, bgs{}
   /**\brief Constructor for Engine.
    *
-   *Engine's constructor is responsible for creating the window with the correct resolution. It's also responsible for enabling and disabling window's settings. Finally it creates a map to contain the textures for all the background sprites.
+   * Engine's constructor is responsible for creating the window with the correct resolution. 
+   * It's also responsible for enabling and disabling window's settings. 
+   * Finally it creates a map to contain the textures for all the background sprites.
    */
 {
     window.setVerticalSyncEnabled(true);
@@ -19,7 +21,8 @@ Engine::Engine()
 void Engine::run()
 /**\brief The function that initiates the game and switches between states.
  *
- *Adds all relevant background textures to its map. Uses stateNum to determine which state should be active. Calls the appropriate switch-function to create andrun the desired state.
+ * Adds all relevant background textures to its map. Uses stateNum to determine which state should be active. 
+ * Calls the appropriate switch-function to create and run the desired state.
  */
 {
     int stateNum{1};
@@ -53,7 +56,8 @@ void Engine::run()
 void Engine::switchMenu(sf::RenderWindow &window, int &stateNum)
     /**\brief The function responsible for creating and switching to MenuState.
    *
-   *Creates the MenuState and sets it texture by using Engine's map of textures. While the state is active the MenuState's update function is run.
+   * Creates the MenuState and sets it texture by using Engine's map of textures. 
+   * While the state is active the MenuState's update function is run.
    */
 {
     sf::Event event{};
@@ -70,7 +74,8 @@ void Engine::switchMenu(sf::RenderWindow &window, int &stateNum)
 void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
   /**\brief The function responsible for creating and switching to PlayState.
    *
-   *Creates the PlayState and sets it texture by using Engine's map of textures. While the state is active the PlayState's update function is run.
+   * Creates the PlayState and sets the background texture by using Engine's map of textures. 
+   * While the state is active the PlayState's update function is run.
    */
 {
     PlayState playstate{bgs.at("Play"), window};
@@ -88,24 +93,33 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
     sf::Vector2f scale{0.3f, 0.3f};
     float playheight{730};
 
-    Player p{3, sf::Vector2f{500.f, 0.f}, sf::Vector2f{200.f, playheight}, scale, player_tex, sword_tex, heart_tex};
-    Peasant e{sf::Vector2f{50.f, 0.f}, sf::Vector2f{600.f, playheight}, scale, peasant_tex};
-    Peasant e1{sf::Vector2f{50.f, 0.f}, sf::Vector2f{650.f, playheight}, scale, peasant_tex};
-    Knight k{2, sf::Vector2f{30.f, 0.f}, sf::Vector2f{10.f, playheight}, scale, knight_tex, sword_tex};
+    Player p{3, 
+        sf::Vector2f{500.f, 0.f}, 
+        sf::Vector2f{200.f, playheight}, 
+        scale, 
+        player_tex, 
+        sword_tex, 
+        heart_tex};
+
+
+    Wave enemy_waves{sf::Vector2f{15.f, 0.f}, 
+        sf::Vector2f{10.f, 0.f}, 
+        playheight, 
+        scale, 
+        peasant_tex, 
+        knight_tex };
 
     playstate.setPlayer(&p);
-    playstate.addEnemy(&e);
-    playstate.addEnemy(&e1);
-    playstate.addEnemy(&k);
     sf::Clock clock;
     sf::Event event{};
     sf::Text score{"", point_font, 50};
     score.setPosition(1500.f, 850.f);
     score.setScale(2.f, 2.f);
+    playstate.wave_timer.restart();
     while(stateNum == 2)
     {
         sf::Time elapsed = clock.restart();
-        playstate.update(elapsed, event, window, stateNum, score);
+        playstate.update(elapsed, event, window, stateNum, score, enemy_waves.waves);
         window.display();
     }
 
@@ -113,13 +127,15 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
 void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
   /**\brief The function responsible for creating and switching to GameOverState.
    *
-   *Creates the GameOverState and sets it texture by using Engine's map of textures. While the state is active the GameOverState's update function is run.
+   * Creates the GameOverState and sets it texture by using Engine's map of textures. 
+   * While the state is active the GameOverState's update function is run.
    */
 {
     sf::Event event{};
     sf::Texture bg{bgs.at("GO")};
     GameOver g{bg, window};
-    while(stateNum == 3) {
+    while(stateNum == 3) 
+    {
         g.update(event, window, stateNum);
         window.display();
     }
@@ -128,7 +144,8 @@ void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
 void Engine::switchWin(sf::RenderWindow &window, int &stateNum)
   /**\brief The function responsible for creating and switching to WinState.
    *
-   *Creates the WinState and sets it texture by using Engine's map of textures. While the state is active the WinState's update function is run.
+   * Creates the WinState and sets it texture by using Engine's map of textures. 
+   * While the state is active the WinState's update function is run.
    */
 {
     sf::Event event{};
@@ -144,7 +161,7 @@ void Engine::switchWin(sf::RenderWindow &window, int &stateNum)
 State::State(sf::Texture &background, sf::RenderWindow &window)
   /**\brief State's constructor. 
    *
-   *Sets texture for the background sprite and causes the dimensionens of the window to keep a ratio of 16:9 regardless oc scaling.
+   * Sets texture for the background sprite and causes the dimensionens of the window to keep a ratio of 16:9 regardless of scaling.
    */
 {
     sf::Vector2u valid_aspect{window.getSize().x, (window.getSize().x / 18) * 10};
@@ -169,7 +186,9 @@ PlayState::PlayState(sf::Texture &background, sf::RenderWindow &window)
 void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
     /** \brief A function to update the game while in MenuState.
      *
-     * Draws the background image. Takes in keyboard input to either switch to the PlayState or close the game. Trigger switching of states by changing the value of stateNum.
+     * Draws the background image. 
+     * Recieves keyboard input to either switch to the PlayState or close the game. 
+     * Trigger switching of states by changing the value of stateNum.
      */
 {
     window_resize(window);
@@ -191,7 +210,9 @@ void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &st
 void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
     /** \brief A function to update the game while in GameOverState.
      *
-     *  Draws the background image. Takes in keyboard input to switch to MenuState. Triggers switching of states by changing the value of stateNum.
+     *  Draws the background image. 
+     *  Recieves keyboard input to switch to MenuState. 
+     *  Triggers switching of states by changing the value of stateNum.
      */
 {
     window_resize(window);
@@ -209,7 +230,9 @@ void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
 void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
     /** \brief A function to update the game while in WinState.
      *
-     *  Draws the background image. Takes in keyboard input to switch to MenuState. Triggers switching of states by changing the value of stateNum.
+     *  Draws the background image. 
+     *  Recieves keyboard input to switch to MenuState. 
+     *  Triggers switching of states by changing the value of stateNum.
      */
 {
     window_resize(window);
@@ -223,42 +246,50 @@ void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
     }
 }
 
-void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window, int &stateNum, sf::Text &score)
-    /** \brief Detta är en kort beskrivning.
+void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window, int &stateNum, sf::Text &score, std::vector<std::vector<Enemy*>> waves)
+    /** \brief Updates all objects belonging to PlayState and then displays them. Changes the state if win or lose conditions are met.
      *
-     * Detta är en detaljerad kommentar
+     * Updates all objects belonging to PlayState and then displays them. 
+     * It adds Enemy objects to the playfield at specific intervals.
+     * Erases Enemy objects when their health is reduced to 0 and adds the objects points to the variable total_points.
+     * Changes the state if win or lose conditions are met.
      */
 {
     window_resize(window);
     window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
     player->player_update(time, event, window, enemies, stateNum);
+
+    if (wave_timer.getElapsedTime().asSeconds() > 5.f && waves.size() != current_wave)
+    {
+        for (Enemy* e: waves[current_wave])
+        {
+            enemies.push_back(e);
+        }
+        current_wave++;
+        wave_timer.restart();
+    }
     for(Enemy* e : enemies)
     {
-        Knight* k = dynamic_cast<Knight*>(e);
-        if(k)
-        {
-            k->update(player, window, time);
-        }
-        else
-        {
-            e->update(player, window, time);
-        }
+        e->update(player, window, time);
         if(e->get_hp() <= 0)
         {
             total_points += e->get_points();
+            //delete e;
         }
     }
     enemies.erase(std::remove_if(
                 enemies.begin(),
                 enemies.end(),
-                [](Enemy* const & c) { return c->get_hp() <= 0; }),
+                [](Enemy* const & c) { return c->get_hp() <= 0;}),
                 enemies.end());
+
     score.setString(std::to_string(total_points));
     window.draw(score);
-    if (enemies.size() == 0)
+
+    if (enemies.size() == 0 && waves.size() == current_wave)
     {
-        stateNum =4;
+        stateNum = 4;
     }
 }
 //STATE FUNCTIONS
@@ -284,15 +315,32 @@ void PlayState::addEnemy(Enemy* enemy)
     enemies.push_back(enemy);
 }
 
-void PlayState::setPlayer(Player* entity) //WHAT DOES THIS DOOO?
-    /** \brief Adds an Player object to the PlayState vector.
+void PlayState::setPlayer(Player* entity) 
+    /** \brief Adds a pointer to the Player object in PlayState.
      *
-     * Inserts the Player object at the beginning of the vector.
+     * Adds a pointer to the Player object in PlayState.
      */
 {
     player = entity;
 }
 
-//PLAYFIELD
-Playfield::Playfield()
-{}
+//Wave
+Wave::Wave(sf::Vector2f p_speed,sf::Vector2f k_speed, float playheight, sf::Vector2f scale, sf::Texture &p_texture, sf::Texture &k_texture)
+    :waves{}
+{
+    std::vector<Enemy*> wave1, wave2, wave3, wave4, wave5;
+    //Wave1
+    for(int i{};i <  2; i++)
+    {
+        int spacing{i};
+        if ( spacing % 2 == 0 )
+        {
+            spacing *= -1;
+        }
+
+        Peasant* p = new Peasant{p_speed, sf::Vector2f{(300.f * spacing), playheight}, scale, p_texture};
+        wave1.push_back(p);
+    }
+
+    waves.push_back(wave1);
+}
