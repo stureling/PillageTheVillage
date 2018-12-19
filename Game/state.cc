@@ -102,9 +102,9 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
     playstate.setPlayer(&p);
     sf::Clock clock;
     sf::Event event{};
-    sf::Text score{"", point_font, 50};
+    sf::Text score{"", point_font, 100};
     score.setPosition(1500.f, 850.f);
-    score.setScale(2.f, 2.f);
+    score.setScale(1.2f, 1.2f);
     playstate.wave_timer.restart();
     while(stateNum == 2)
     {
@@ -264,7 +264,7 @@ void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window
         std::shared_ptr<Knight> knight = std::dynamic_pointer_cast<Knight>(enemies[element]);
         if( knight )
         {
-            enemies[element]->update(player, window, time);
+            knight->update(player, window, time);
             std::cout << "knight" << std::endl;
         }
         else
@@ -324,12 +324,34 @@ void PlayState::setPlayer(Player* entity)
 
 std::vector<std::vector<std::shared_ptr<Enemy>>> Engine::create_waves(sf::Vector2f p_speed,sf::Vector2f k_speed, float playheight, sf::Vector2f scale, sf::Texture &peasant_tex, sf::Texture &knight_tex, sf::Texture &sword_tex)
 {
+    int max_waves{};
+    std::map<int, std::vector<int>> enemies{};
+    std::ifstream file("playfield.txt");
+    if( file.is_open() )
+    {
+        std::string line;
+        std::getline(file,line);
+        std::getline(file,line);
+        
+        max_waves = std::stoi(line);
+        for( int linum{0}; linum < 4; linum++ )
+        {
+            std::getline(file,line);
+            std::getline(file,line);
+            std::vector<int> v{};
+            v.push_back(std::stoi(line));
+            std::getline(file,line);
+            std::getline(file,line);
+            v.push_back(std::stoi(line));
+            enemies.emplace(std::pair<int, std::vector<int>>{linum, v});
+        }
+    }
+
     std::vector<std::vector<std::shared_ptr<Enemy>>> waves;
-    int max_waves{2};
-    int peasants{2};
-    int knights{2};
     for (int current_wave{}; current_wave < max_waves; current_wave++)
     {
+        int knights{enemies.at(current_wave)[0]};
+        int peasants{enemies.at(current_wave)[1]};
         std::vector<std::shared_ptr<Enemy>> subwave;
         //Peasants
         for(int i{};i <  peasants; i++)
@@ -340,7 +362,7 @@ std::vector<std::vector<std::shared_ptr<Enemy>>> Engine::create_waves(sf::Vector
                 spacing *= -1;
             }
             std::shared_ptr<Enemy> p = std::make_shared<Enemy>(Peasant{p_speed, 
-                    sf::Vector2f{(300.f * spacing), 
+                    sf::Vector2f{(300.f * spacing + 1920 * spacing), 
                     playheight}, 
                     scale, 
                     peasant_tex});
@@ -354,8 +376,8 @@ std::vector<std::vector<std::shared_ptr<Enemy>>> Engine::create_waves(sf::Vector
             {
                 spacing *= -1;
             }
-            std::shared_ptr<Enemy> p = std::make_shared<Enemy>(Knight{k_speed, 
-                    sf::Vector2f{(300.f * spacing), playheight}, 
+            std::shared_ptr<Knight> p = std::make_shared<Knight>(Knight{k_speed, 
+                    sf::Vector2f{(300.f * spacing + 1920 * spacing), playheight}, 
                     scale, 
                     knight_tex,
                     sword_tex});

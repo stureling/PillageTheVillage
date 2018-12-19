@@ -380,7 +380,7 @@ void Sword<T>::heavy_attack(std::vector<T> enemies, float orientation)
 }
 
 //KNIGHT FUNCTIONS
-void Knight::update(Player* player, sf::RenderWindow &window, sf::Time tick)
+void Knight::update(Entity* player, sf::RenderWindow &window, sf::Time tick)
     /** \brief Moves the Knight towards the Player object.
      *
      * Moves the Knight towards the Player object based on the time elapsed since the last update.
@@ -408,7 +408,8 @@ void Knight::update(Player* player, sf::RenderWindow &window, sf::Time tick)
         sword.timer.restart();
     }
     std::vector<Player*> v;
-    v.push_back(player);
+    Player* p = static_cast<Player*>(player);
+    v.push_back(p);
     sword.update(v, this);
     window.draw(sword);
     window.draw(*this);

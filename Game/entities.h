@@ -2,6 +2,7 @@
 #define ENTITIES_H
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <fstream>
 #include <iterator>
 #include <math.h>
 #include <memory>
@@ -13,6 +14,7 @@ class Entity : public sf::Sprite
     public:
         Entity(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
         int get_hp();
+        void virtual hit(int attack_type) = 0;
     protected:
         sf::Vector2f const speed; 
         int hp;
@@ -26,8 +28,8 @@ class Enemy : public Entity
 {
     public:
         Enemy(int hp, int immunity, unsigned points, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
-        void hit(int attack_type);
-        void update(Entity* player, sf::RenderWindow &window, sf::Time tick);
+        void virtual update(Entity* player, sf::RenderWindow &window, sf::Time tick);
+        void hit(int attack_type)  override;
         unsigned get_points();
     protected:
         int immunity;
@@ -63,7 +65,7 @@ class Player : public Entity
                 sf::Texture &health);
         ~Player();
         void collision(std::vector<std::shared_ptr<Enemy>> enemy);
-        void hit(int attack_mode);
+        void hit(int attack_mode) override;
         void player_update(sf::Time time, 
                 sf::Event &event_queue, 
                 sf::RenderWindow &window, 
@@ -91,7 +93,7 @@ class Knight : public Enemy
                 sf::Vector2f scale, 
                 sf::Texture &texture,
                 sf::Texture &sword_t);
-        void update(Player* player, sf::RenderWindow &window, sf::Time tick);
+        void update(Entity* player, sf::RenderWindow &window, sf::Time tick) override;
     private:
         Sword<Player*> sword;
 };
