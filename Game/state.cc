@@ -39,13 +39,13 @@ void Engine::run()
         switchMenu(window, stateNum);
     }
     while (stateNum == 2) {
-        switchPlay(window, stateNum);
+      switchPlay(window, stateNum, total_points);
     }
     while (stateNum == 3){
-        switchGO(window, stateNum);
+      switchGO(window, stateNum, total_points);
     }
     while (stateNum == 4) {
-        switchWin(window, stateNum);
+      switchWin(window, stateNum, total_points);
     }
 }
 //SWITCH
@@ -67,7 +67,7 @@ void Engine::switchMenu(sf::RenderWindow &window, int &stateNum)
         window.display();
     }
 }
-void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
+void Engine::switchPlay(sf::RenderWindow &window, int &stateNum, unsigned &total_points)
   /**\brief The function responsible for creating and switching to PlayState.
    *
    * Creates the PlayState and sets the background texture by using Engine's map of textures. 
@@ -109,12 +109,12 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
     while(stateNum == 2)
     {
         sf::Time elapsed = clock.restart();
-        playstate.update(elapsed, event, window, stateNum, score, waves);
+        playstate.update(elapsed, event, window, stateNum, score, waves, total_points);
         window.display();
     }
 
 }
-void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
+void Engine::switchGO(sf::RenderWindow &window, int &stateNum, unsigned const &total_points)
   /**\brief The function responsible for creating and switching to GameOverState.
    *
    * Creates the GameOverState and sets it texture by using Engine's map of textures. 
@@ -124,14 +124,20 @@ void Engine::switchGO(sf::RenderWindow &window, int &stateNum)
     sf::Event event{};
     sf::Texture bg{bgs.at("GO")};
     GameOver g{bg, window};
+    sf::Font point_font{};
+    point_font.loadFromFile("static/fonts/Hack-Bold.ttf");
+    sf::Text score{"", point_font, 100};
+    score.setScale(1.f, 1.f);
+    score.setPosition(970.f, 775.f);
+    
     while(stateNum == 3) 
     {
-        g.update(event, window, stateNum);
-        window.display();
+      g.update(event, window, stateNum, score, total_points);
+      window.display();
     }
 }
 
-void Engine::switchWin(sf::RenderWindow &window, int &stateNum)
+void Engine::switchWin(sf::RenderWindow &window, int &stateNum, unsigned const &total_points)
   /**\brief The function responsible for creating and switching to WinState.
    *
    * Creates the WinState and sets it texture by using Engine's map of textures. 
@@ -141,8 +147,14 @@ void Engine::switchWin(sf::RenderWindow &window, int &stateNum)
     sf::Event event{};
     sf::Texture bg{bgs.at("Win")};
     WinState w{bg, window};
+    sf::Font point_font{};
+    point_font.loadFromFile("static/fonts/Hack-Bold.ttf");
+    sf::Text score{"", point_font, 50};
+    score.setPosition(930.f, 500.f);
+    score.setScale(2.f, 2.f);
+    
     while (stateNum == 4) {
-        w.update(event, window, stateNum);
+      w.update(event, window, stateNum, score, total_points);
         window.display();
     }
 }
@@ -170,7 +182,7 @@ WinState::WinState(sf::Texture &background, sf::RenderWindow &window)
     :State{background, window}{}
 
 PlayState::PlayState(sf::Texture &background, sf::RenderWindow &window)
-    :State{background, window}, total_points{}, current_wave{0}{}
+    :State{background, window}, current_wave{0}{}
 
 //UPDATE
 void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
@@ -197,7 +209,7 @@ void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &st
     }
 }
 
-void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
+void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum, sf::Text &score, unsigned const &total_points) 
     /** \brief A function to update the game while in GameOverState.
      *
      *  Draws the background image. 
@@ -208,6 +220,9 @@ void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
     window_resize(window);
     window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
+    score.setString(std::to_string(total_points));
+    score.setOrigin(score.getLocalBounds().width/2.f, 0.f);
+    window.draw(score);
     while (window.pollEvent(event_queue)) {
         if (event_queue.type == sf::Event::KeyReleased
             && event_queue.key.code == sf::Keyboard::Return)
@@ -217,7 +232,7 @@ void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
     }
 }
 
-void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
+void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum, sf::Text &score, unsigned const &total_points) 
     /** \brief A function to update the game while in WinState.
      *
      *  Draws the background image. 
@@ -228,6 +243,9 @@ void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
     window_resize(window);
     window.clear(sf::Color(0, 0, 0, 255));
     window.draw(bg);
+    score.setString(std::to_string(total_points));
+    score.setOrigin(score.getLocalBounds().width/2.f, 0.f);
+    window.draw(score);
     while (window.pollEvent(event_queue)) {
         if (event_queue.type == sf::Event::KeyReleased
             && event_queue.key.code == sf::Keyboard::Return) {
@@ -236,7 +254,7 @@ void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
     }
 }
 
-void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window, int &stateNum, sf::Text &score, std::vector<std::vector<std::shared_ptr<Enemy>>> &waves)
+void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window, int &stateNum, sf::Text &score, std::vector<std::vector<std::shared_ptr<Enemy>>> &waves, unsigned &total_points)
     /** \brief Updates all objects belonging to PlayState and then displays them. Changes the state if win or lose conditions are met.
      *
      * Updates all objects belonging to PlayState and then displays them. 

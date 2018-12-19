@@ -13,10 +13,10 @@ public:
     void run();
     sf::RenderWindow window;
 private:
-    void switchPlay(sf::RenderWindow &window, int &stateNum);
+    void switchPlay(sf::RenderWindow &window, int &stateNum, unsigned &total_points);
     void switchMenu(sf::RenderWindow &window, int &stateNum);
-    void switchGO(sf::RenderWindow &windows, int &stateNum);
-    void switchWin(sf::RenderWindow &window, int &stateNum);
+    void switchGO(sf::RenderWindow &windows, int &stateNum, unsigned const &total_points);
+    void switchWin(sf::RenderWindow &window, int &stateNum, unsigned const &total_points);
     static std::vector<std::vector<std::shared_ptr<Enemy>>> create_waves(sf::Vector2f p_speed,
             sf::Vector2f k_speed, 
             float playheight, 
@@ -25,6 +25,7 @@ private:
             sf::Texture &knight_tex, 
             sf::Texture &sword_tex);
     std::map<std::string, sf::Texture> bgs;
+    unsigned total_points;  
 };
 
 class State
@@ -52,7 +53,9 @@ public:
     GameOver(sf::Texture &background, sf::RenderWindow &window);
     void update(sf::Event &event_queue,
             sf::RenderWindow &window,
-            int &stateNum);
+            int &stateNum,
+            sf::Text &score,
+            unsigned const &total_points);
 };
 
 class WinState : public State
@@ -61,7 +64,9 @@ public:
     WinState(sf::Texture &background, sf::RenderWindow &window);
     void update(sf::Event &event_queue,
                 sf::RenderWindow &window,
-                int &stateNum);
+                int &stateNum,
+                sf::Text &score,
+                unsigned const &total_points);
 };
 
 class PlayState : public State
@@ -76,11 +81,11 @@ class PlayState : public State
                 sf::RenderWindow &window,
                 int &stateNum,
                 sf::Text &score,
-                std::vector<std::vector<std::shared_ptr<Enemy>>> &waves);
+                std::vector<std::vector<std::shared_ptr<Enemy>>> &waves,
+                unsigned &total_points);
     private:
         std::vector<std::shared_ptr<Enemy>> enemies;
         Player* player;
-        unsigned total_points;
         sf::Clock wave_timer;
         unsigned current_wave;
 };
