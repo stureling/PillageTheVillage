@@ -143,7 +143,13 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
     draw_player(window);
     if( hp <= 0 )
     {
-        //player_death(stateNum, window);
+        sf::RectangleShape fade{sf::Vector2f{1920.f, 1080.f}};
+        timer.restart();
+        while( timer.getElapsedTime().asSeconds() < 1.5f )
+        {
+            fade.setFillColor(sf::Color(0,0,0,1));
+            window.draw(fade);
+        }
         stateNum = 3;
     }
 }

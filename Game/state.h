@@ -86,7 +86,7 @@ class PlayState : public State
     private:
         std::vector<std::shared_ptr<Enemy>> enemies;
         Player* player;
-        sf::Clock wave_timer;
+        sf::Clock timer;
         unsigned current_wave;
 };
 #endif

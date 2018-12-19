@@ -98,14 +98,14 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum, unsigned &total
         heart_tex};
 
         std::vector<std::vector<std::shared_ptr<Enemy>>> waves;
-        waves = create_waves(sf::Vector2f{25.f, 0.f}, sf::Vector2f{15.f, 0.f}, playheight, scale, peasant_tex, knight_tex, sword_tex);
+        waves = create_waves(sf::Vector2f{45.f, 0.f}, sf::Vector2f{25.f, 0.f}, playheight, scale, peasant_tex, knight_tex, sword_tex);
     playstate.setPlayer(&p);
     sf::Clock clock;
     sf::Event event{};
     sf::Text score{"", point_font, 100};
     score.setPosition(1500.f, 850.f);
     score.setScale(1.2f, 1.2f);
-    playstate.wave_timer.restart();
+    playstate.timer.restart();
     while(stateNum == 2)
     {
         sf::Time elapsed = clock.restart();
@@ -268,14 +268,17 @@ void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window
     window.draw(bg);
     player->player_update(time, event, window, enemies, stateNum);
 
-    if (wave_timer.getElapsedTime().asSeconds() > 5.f && waves.size() != current_wave)
+    if ((timer.getElapsedTime().asSeconds() > 20.f && waves.size() != current_wave) ||
+            current_wave==0)
     {
         for (unsigned element{}; element < waves[current_wave].size() ; element++)
         {
             enemies.push_back(waves[current_wave][element]);
         }
+        std::cout << "added in wave: " << waves[current_wave].size() << std::endl;
+        std::cout << "enemies in playfield: " << enemies.size() << std::endl;
         current_wave++;
-        wave_timer.restart();
+        timer.restart();
     }
     for(unsigned element{}; element < enemies.size() ; element++ )
     {
@@ -283,7 +286,6 @@ void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window
         if( knight )
         {
             knight->update(player, window, time);
-            std::cout << "knight" << std::endl;
         }
         else
         {
@@ -375,12 +377,13 @@ std::vector<std::vector<std::shared_ptr<Enemy>>> Engine::create_waves(sf::Vector
         for(int i{};i <  peasants; i++)
         {
             int spacing{i};
+            int spawnpoint{1};
             if ( spacing % 2 == 0 )
             {
-                spacing *= -1;
+                spawnpoint *= -1;
             }
             std::shared_ptr<Enemy> p = std::make_shared<Enemy>(Peasant{p_speed, 
-                    sf::Vector2f{(300.f * spacing + 1920 * spacing), 
+                    sf::Vector2f{(200.f * spacing * spawnpoint + 1920 *spawnpoint), 
                     playheight}, 
                     scale, 
                     peasant_tex});
