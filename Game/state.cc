@@ -1,7 +1,3 @@
-//
-// Created by agnha531 on 12/12/18.
-//
-
 #include "state.h"
 
 //ENGINE FUNCTIONS
@@ -101,14 +97,8 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
         sword_tex, 
         heart_tex};
 
-
-    Wave enemy_waves{sf::Vector2f{15.f, 0.f}, 
-        sf::Vector2f{10.f, 0.f}, 
-        playheight, 
-        scale, 
-        peasant_tex, 
-        knight_tex };
-
+        std::vector<std::vector<std::shared_ptr<Enemy>>> waves;
+        waves = create_waves(sf::Vector2f{25.f, 0.f}, sf::Vector2f{15.f, 0.f}, playheight, scale, peasant_tex, knight_tex, sword_tex);
     playstate.setPlayer(&p);
     sf::Clock clock;
     sf::Event event{};
@@ -119,7 +109,7 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum)
     while(stateNum == 2)
     {
         sf::Time elapsed = clock.restart();
-        playstate.update(elapsed, event, window, stateNum, score, enemy_waves.waves);
+        playstate.update(elapsed, event, window, stateNum, score, waves);
         window.display();
     }
 
@@ -180,7 +170,7 @@ WinState::WinState(sf::Texture &background, sf::RenderWindow &window)
     :State{background, window}{}
 
 PlayState::PlayState(sf::Texture &background, sf::RenderWindow &window)
-    :State{background, window}, total_points{}{}
+    :State{background, window}, total_points{}, current_wave{0}{}
 
 //UPDATE
 void MenuState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum) 
@@ -246,7 +236,7 @@ void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
     }
 }
 
-void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window, int &stateNum, sf::Text &score, std::vector<std::vector<Enemy*>> waves)
+void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window, int &stateNum, sf::Text &score, std::vector<std::vector<std::shared_ptr<Enemy>>> &waves)
     /** \brief Updates all objects belonging to PlayState and then displays them. Changes the state if win or lose conditions are met.
      *
      * Updates all objects belonging to PlayState and then displays them. 
@@ -262,26 +252,34 @@ void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window
 
     if (wave_timer.getElapsedTime().asSeconds() > 5.f && waves.size() != current_wave)
     {
-        for (Enemy* e: waves[current_wave])
+        for (unsigned element{}; element < waves[current_wave].size() ; element++)
         {
-            enemies.push_back(e);
+            enemies.push_back(waves[current_wave][element]);
         }
         current_wave++;
         wave_timer.restart();
     }
-    for(Enemy* e : enemies)
+    for(unsigned element{}; element < enemies.size() ; element++ )
     {
-        e->update(player, window, time);
-        if(e->get_hp() <= 0)
+        std::shared_ptr<Knight> knight = std::dynamic_pointer_cast<Knight>(enemies[element]);
+        if( knight )
         {
-            total_points += e->get_points();
-            //delete e;
+            enemies[element]->update(player, window, time);
+            std::cout << "knight" << std::endl;
+        }
+        else
+        {
+            enemies[element]->update(player, window, time);
+        }
+        if(enemies[element]->get_hp() <= 0)
+        {
+            total_points += enemies[element]->get_points();
         }
     }
     enemies.erase(std::remove_if(
                 enemies.begin(),
                 enemies.end(),
-                [](Enemy* const & c) { return c->get_hp() <= 0;}),
+                [](std::shared_ptr<Enemy> const & c) { return c->get_hp() <= 0;}),
                 enemies.end());
 
     score.setString(std::to_string(total_points));
@@ -306,7 +304,7 @@ void State::window_resize(sf::RenderWindow &window)
 
 
 //PLAYSTATE FUNCTIONS
-void PlayState::addEnemy(Enemy* enemy)
+void PlayState::addEnemy(std::shared_ptr<Enemy> enemy)
     /** \brief Adds an Enemy object to a vector.
      *
      * Inserts the Enemy object at the beginning of the vector.
@@ -324,23 +322,46 @@ void PlayState::setPlayer(Player* entity)
     player = entity;
 }
 
-//Wave
-Wave::Wave(sf::Vector2f p_speed,sf::Vector2f k_speed, float playheight, sf::Vector2f scale, sf::Texture &p_texture, sf::Texture &k_texture)
-    :waves{}
+std::vector<std::vector<std::shared_ptr<Enemy>>> Engine::create_waves(sf::Vector2f p_speed,sf::Vector2f k_speed, float playheight, sf::Vector2f scale, sf::Texture &peasant_tex, sf::Texture &knight_tex, sf::Texture &sword_tex)
 {
-    std::vector<Enemy*> wave1, wave2, wave3, wave4, wave5;
-    //Wave1
-    for(int i{};i <  2; i++)
+    std::vector<std::vector<std::shared_ptr<Enemy>>> waves;
+    int max_waves{2};
+    int peasants{2};
+    int knights{2};
+    for (int current_wave{}; current_wave < max_waves; current_wave++)
     {
-        int spacing{i};
-        if ( spacing % 2 == 0 )
+        std::vector<std::shared_ptr<Enemy>> subwave;
+        //Peasants
+        for(int i{};i <  peasants; i++)
         {
-            spacing *= -1;
+            int spacing{i};
+            if ( spacing % 2 == 0 )
+            {
+                spacing *= -1;
+            }
+            std::shared_ptr<Enemy> p = std::make_shared<Enemy>(Peasant{p_speed, 
+                    sf::Vector2f{(300.f * spacing), 
+                    playheight}, 
+                    scale, 
+                    peasant_tex});
+            subwave.push_back(p);
         }
-
-        Peasant* p = new Peasant{p_speed, sf::Vector2f{(300.f * spacing), playheight}, scale, p_texture};
-        wave1.push_back(p);
+        //Knights
+        for(int i{};i <  knights; i++)
+        {
+            int spacing{i};
+            if ( spacing % 2 == 0 )
+            {
+                spacing *= -1;
+            }
+            std::shared_ptr<Enemy> p = std::make_shared<Enemy>(Knight{k_speed, 
+                    sf::Vector2f{(300.f * spacing), playheight}, 
+                    scale, 
+                    knight_tex,
+                    sword_tex});
+            subwave.push_back(p);
+        }
+        waves.push_back(subwave);
     }
-
-    waves.push_back(wave1);
+    return waves;
 }

@@ -1,9 +1,6 @@
 #ifndef STATE_H
 #define STATE_H
 #include "entities.h"
-#include <SFML/Graphics.hpp>
-#include <map>
-#include <string>
 
 class Engine
 {
@@ -20,6 +17,13 @@ private:
     void switchMenu(sf::RenderWindow &window, int &stateNum);
     void switchGO(sf::RenderWindow &windows, int &stateNum);
     void switchWin(sf::RenderWindow &window, int &stateNum);
+    static std::vector<std::vector<std::shared_ptr<Enemy>>> create_waves(sf::Vector2f p_speed,
+            sf::Vector2f k_speed, 
+            float playheight, 
+            sf::Vector2f scale, 
+            sf::Texture &peasant_tex, 
+            sf::Texture &knight_tex, 
+            sf::Texture &sword_tex);
     std::map<std::string, sf::Texture> bgs;
 };
 
@@ -60,36 +64,24 @@ public:
                 int &stateNum);
 };
 
-
 class PlayState : public State
 {
     friend class Engine;
     public:
         PlayState(sf::Texture &background, sf::RenderWindow &window);
-        void addEnemy(Enemy* entity);
+        void addEnemy(std::shared_ptr<Enemy> enemy);
         void setPlayer(Player* player);
         void update(sf::Time time, 
                 sf::Event &event, 
                 sf::RenderWindow &window,
                 int &stateNum,
                 sf::Text &score,
-                std::vector<std::vector<Enemy*>> waves);
+                std::vector<std::vector<std::shared_ptr<Enemy>>> &waves);
     private:
-        std::vector<Enemy*> enemies;
+        std::vector<std::shared_ptr<Enemy>> enemies;
         Player* player;
         unsigned total_points;
         sf::Clock wave_timer;
         unsigned current_wave;
 };
-
-class Wave
-{
-    friend class PlayState;
-    public:
-        Wave(sf::Vector2f p_speed,sf::Vector2f k_speed, float playheight, sf::Vector2f scale, sf::Texture &p_texture, sf::Texture &k_texture);
-        std::vector<std::vector<Enemy*>> waves;
-        
-};
-
-
 #endif

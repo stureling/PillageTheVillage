@@ -4,6 +4,9 @@
 #include <iostream>
 #include <iterator>
 #include <math.h>
+#include <memory>
+#include <map>
+#include <string>
 
 class Entity : public sf::Sprite
 {
@@ -59,12 +62,12 @@ class Player : public Entity
                 sf::Texture &sword_t,
                 sf::Texture &health);
         ~Player();
-        void collision(std::vector<Enemy*> Enemy);
+        void collision(std::vector<std::shared_ptr<Enemy>> enemy);
         void hit(int attack_mode);
         void player_update(sf::Time time, 
                 sf::Event &event_queue, 
                 sf::RenderWindow &window, 
-                std::vector<Enemy*> &enemies,
+                std::vector<std::shared_ptr<Enemy>> &enemies,
                 int &stateNum);
         void draw_player(sf::RenderWindow &window);
         void process_input( sf::Event &event_queue, 
@@ -73,7 +76,7 @@ class Player : public Entity
                 sf::Time tick);
         void jump();
     private:
-        Sword<Enemy*> sword;
+        Sword<std::shared_ptr<Enemy>> sword;
         sf::Sprite health;
         bool jumping;
         float playheight;
@@ -83,13 +86,12 @@ class Player : public Entity
 class Knight : public Enemy
 {
     public:
-        Knight(int hp, 
-                sf::Vector2f speed, 
+        Knight(sf::Vector2f speed, 
                 sf::Vector2f position, 
                 sf::Vector2f scale, 
                 sf::Texture &texture,
                 sf::Texture &sword_t);
-        void update(Entity* player, sf::RenderWindow &window, sf::Time tick);
+        void update(Player* player, sf::RenderWindow &window, sf::Time tick);
     private:
         Sword<Player*> sword;
 };
