@@ -35,13 +35,15 @@ Playerklassen ska representera karaktären spelaren kontrollerar. Spelaren har t
 \item void hit(). Sänker spelkaraktärens health vid kollision med fiendeobjekt, såvida spelkaraktären inte är immun mot skada.
 \item void jump(). Spelkaraktären rör sig i y-led till en viss y-koordinat och sedan tillbaka i motsatt riktning.
 \end{itemize}
-\section{Beskrivning av Enemy}
-Enemyklassen ska reprensentera fienderna som spelaren behöver besegra. 
-Enemyklassen har två underklasser; Peasant och Knight.
-Enemy är en abstrakt klass. 
-Spelkaraktären tar skada när den kolliderar med någon av fiendeobjekten. 
-Fienderobjektens mål är att röra sig in i spelkaraktären. 
-Enemyklassen ärver från Entityklassen.
+\section{Detaljbeskrivning av Enemy}
+\begin{enumerate}
+\item Enemyklassen ska reprensentera fienderna som spelaren behöver besegra. 
+\item Enemyklassen har två underklasser; Peasant och Knight.
+\item Enemy är en abstrakt klass. 
+\item Spelkaraktären tar skada när den kolliderar med någon av fiendeobjekten. 
+\item Fienderobjektens mål är att röra sig in i spelkaraktären. 
+\item Enemyklassen ärver från Entityklassen.
+\end{enumerate}
 \begin{itemize}
 \item int hp; ärvs från Entity. Denna datamedlem innehåller information om hur mycket skada Enemyobjektet kan ta innan destruktion.
 \item Vector2f position; ärvs från Entity. Position sparar Enemyobjektets koordinater på banan.
