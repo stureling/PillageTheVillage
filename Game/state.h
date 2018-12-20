@@ -67,7 +67,7 @@ class WinState : public State
 	      int &stateNum,
 	      sf::Text &score,
 	      unsigned const &total_points, 
-	      std::map<std::string, sf::Texture> &bgs);
+	      std::map<std::string, sf::Texture> const &bgs);
  private:
   sf::Clock timer;
 };

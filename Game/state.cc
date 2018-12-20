@@ -243,7 +243,7 @@ void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
   }
 }
 
-void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum, sf::Text &score, unsigned const &total_points, std::map<std::string, sf::Texture> &bgs)
+void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum, sf::Text &score, unsigned const &total_points, std::map<std::string, sf::Texture> const &bgs)
 /** \brief A function to update the game while in WinState.
  *
  *  Draws the background image. 

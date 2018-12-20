@@ -2,7 +2,7 @@
 //CONSTRUCTORS
 //ENTITY
 Entity::Entity(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture)
-  :speed{speed}, hp{hp}, scale{scale}, timer{}, immunity_timer{}, marked_for_destruction{false}
+  :speed{speed}, hp{hp}, scale{scale}, timer{}, immunity_timer{}
 {
   setTexture(texture);
   setOrigin(sf::Vector2f{(getLocalBounds().width / 2.f), getLocalBounds().height});

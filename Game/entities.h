@@ -21,7 +21,6 @@ class Entity : public sf::Sprite
   sf::Vector2f scale;
   sf::Clock timer;
   sf::Clock immunity_timer;
-  bool marked_for_destruction;
 };
 
 class Enemy : public Entity
@@ -34,7 +33,7 @@ class Enemy : public Entity
   unsigned get_points() const;
  protected:
   int const immunity;
-  unsigned points;
+  unsigned const points;
 };
 template <typename T>
 class Sword : public sf::Sprite
@@ -51,7 +50,7 @@ class Sword : public sf::Sprite
  private:
   int attack_mode;
   sf::Clock timer;
-  float speed;
+  float const speed;
 
 };
 
@@ -82,7 +81,7 @@ class Player : public Entity
   Sword<std::shared_ptr<Enemy>> sword;
   sf::Sprite health;
   bool jumping;
-  float playheight;
+  float const playheight;
 
 };
 
