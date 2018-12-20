@@ -12,7 +12,7 @@ class Entity : public sf::Sprite
 {
     public:
         Entity(int hp, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
-        int get_hp();
+        int get_hp() const;
     protected:
         sf::Vector2f const speed; 
         int hp;
@@ -28,9 +28,9 @@ class Enemy : public Entity
         Enemy(int hp, int immunity, unsigned points, sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf::Texture &texture);
         void hit(int attack_type);
         void update(Entity* player, sf::RenderWindow &window, sf::Time tick);
-        unsigned get_points();
+        unsigned get_points() const;
     protected:
-        int immunity;
+        int const immunity;
         unsigned points;
 };
 template <typename T>

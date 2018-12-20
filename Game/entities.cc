@@ -42,7 +42,7 @@ Knight::Knight(sf::Vector2f speed, sf::Vector2f position, sf::Vector2f scale, sf
 
 //FUNCTIONS
 //ENTITY FUNCTIONS
-int Entity::get_hp()
+int Entity::get_hp() const
 {
     return hp;
 }
@@ -78,7 +78,7 @@ void Enemy::hit(int attack_type)
 }
 
 
-unsigned Enemy::get_points()
+unsigned Enemy::get_points() const
 {
     return points;
 }

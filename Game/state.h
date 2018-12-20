@@ -14,9 +14,9 @@ public:
     sf::RenderWindow window;
 private:
     void switchPlay(sf::RenderWindow &window, int &stateNum, unsigned &total_points);
-    void switchMenu(sf::RenderWindow &window, int &stateNum);
-    void switchGO(sf::RenderWindow &windows, int &stateNum, unsigned const &total_points);
-    void switchWin(sf::RenderWindow &window, int &stateNum, unsigned const &total_points);
+    void switchMenu(sf::RenderWindow &window, int &stateNum) const;
+    void switchGO(sf::RenderWindow &windows, int &stateNum, unsigned const &total_points) const;
+    void switchWin(sf::RenderWindow &window, int &stateNum, unsigned const &total_points) const;
     static std::vector<std::vector<std::shared_ptr<Enemy>>> create_waves(sf::Vector2f p_speed,
             sf::Vector2f k_speed, 
             float playheight, 
