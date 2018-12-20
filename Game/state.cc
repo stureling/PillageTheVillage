@@ -2,7 +2,7 @@
 
 //ENGINE FUNCTIONS
 Engine::Engine()
-  : window{sf::VideoMode(1920, 1080), "Hang in there, bud"}, bgs{}
+  : window{sf::VideoMode(1920, 1080), "Hang in there, bud"}, bgs{}, total_points{}
     /**\brief Constructor for Engine.
      *
      * Engine's constructor is responsible for creating the window with the correct resolution. 
@@ -22,7 +22,7 @@ void Engine::run()
  */
 {
   int stateNum{1};
-  sf::Texture menu_tex, go_tex, win_tex, play_tex;
+  sf::Texture menu_tex, go_tex, win_tex, play_tex, win_clean;
   menu_tex.loadFromFile("static/bg/menu.png");
   bgs.emplace(std::make_pair(std::string("Menu"), sf::Texture (menu_tex)));
 
@@ -33,6 +33,8 @@ void Engine::run()
   bgs.emplace(std::make_pair(std::string("GO"), sf::Texture (go_tex)));
 
   win_tex.loadFromFile("static/bg/monster.png");
+  win_clean.loadFromFile("static/bg/win_clean.png");
+  bgs.emplace(std::make_pair(std::string("Monster"), sf::Texture (win_tex)));
   bgs.emplace(std::make_pair(std::string("Win"), sf::Texture (win_tex)));
 
   while(stateNum == 1)
@@ -103,14 +105,14 @@ void Engine::switchPlay(sf::RenderWindow &window, int &stateNum, unsigned &total
 	  heart_tex};
 
   std::vector<std::vector<std::shared_ptr<Enemy>>> waves;
-  waves = create_waves(sf::Vector2f{25.f, 0.f}, sf::Vector2f{15.f, 0.f}, playheight, scale, peasant_tex, knight_tex, sword_tex);
+  waves = create_waves(sf::Vector2f{45.f, 0.f}, sf::Vector2f{25.f, 0.f}, playheight, scale, peasant_tex, knight_tex, sword_tex);
   playstate.setPlayer(&p);
   sf::Clock clock;
   sf::Event event{};
-  sf::Text score{"", point_font, 50};
+  sf::Text score{"", point_font, 100};
   score.setPosition(1500.f, 850.f);
-  score.setScale(2.f, 2.f);
-  playstate.wave_timer.restart();
+  score.setScale(1.2f, 1.2f);
+  playstate.timer.restart();
   while(stateNum == 2)
     {
       sf::Time elapsed = clock.restart();
@@ -158,9 +160,9 @@ void Engine::switchWin(sf::RenderWindow &window, int &stateNum, unsigned const &
   score.setPosition(930.f, 500.f);
   score.setScale(2.f, 2.f);
     
-  while (stateNum == 4)
+  while (stateNum == 4) 
     {
-      w.update(event, window, stateNum, score, total_points);
+      w.update(event, window, stateNum, score, total_points, bgs);
       window.display();
     }
 }
@@ -241,7 +243,7 @@ void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
   }
 }
 
-void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum, sf::Text &score, unsigned const &total_points) 
+void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum, sf::Text &score, unsigned const &total_points, std::map<std::string, sf::Texture> &bgs)
 /** \brief A function to update the game while in WinState.
  *
  *  Draws the background image. 
@@ -249,20 +251,30 @@ void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
  *  Triggers switching of states by changing the value of stateNum.
  */
 {
-  window_resize(window);
-  window.clear(sf::Color(0, 0, 0, 255));
-  window.draw(bg);
-  score.setString(std::to_string(total_points));
-  score.setOrigin(score.getLocalBounds().width/2.f, 0.f);
-  window.draw(score);
-  while (window.pollEvent(event_queue))
+  while( timer.getElapsedTime().asSeconds() < 2.f )
     {
-      if (event_queue.type == sf::Event::KeyReleased
-	  && event_queue.key.code == sf::Keyboard::Return)
-	{
-	  stateNum = 1;
+      if( std::fmod(timer.getElapsedTime().asSeconds(), 0.02f) < 0.01 )
+        {
+	  bg.setTexture(bgs.at("Monster"));
         }
+      else
+        {
+	  bg.setTexture(bgs.at("Win"));
+        }
+      window_resize(window);
+      window.clear(sf::Color(0, 0, 0, 255));
+      window.draw(bg);
+      score.setString(std::to_string(total_points));
+      score.setOrigin(score.getLocalBounds().width/2.f, 0.f);
+      window.draw(score);
+      window.display();
     }
+  while (window.pollEvent(event_queue)) {
+    if (event_queue.type == sf::Event::KeyReleased
+	&& event_queue.key.code == sf::Keyboard::Return) {
+      stateNum = 1;
+    }
+  }
 }
 
 void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window, int &stateNum, sf::Text &score, std::vector<std::vector<std::shared_ptr<Enemy>>> &waves, unsigned &total_points)
@@ -279,22 +291,22 @@ void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window
   window.draw(bg);
   player->player_update(time, event, window, enemies, stateNum);
 
-  if (wave_timer.getElapsedTime().asSeconds() > 5.f && waves.size() != current_wave)
+  if ((timer.getElapsedTime().asSeconds() > 20.f && waves.size() != current_wave) ||
+      current_wave==0)
     {
       for (unsigned element{}; element < waves[current_wave].size() ; element++)
         {
 	  enemies.push_back(waves[current_wave][element]);
         }
       current_wave++;
-      wave_timer.restart();
+      timer.restart();
     }
   for(unsigned element{}; element < enemies.size() ; element++ )
     {
       std::shared_ptr<Knight> knight = std::dynamic_pointer_cast<Knight>(enemies[element]);
       if( knight )
         {
-	  enemies[element]->update(player, window, time);
-	  std::cout << "knight" << std::endl;
+	  knight->update(player, window, time);
         }
       else
         {
@@ -316,6 +328,14 @@ void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window
 
   if (enemies.size() == 0 && waves.size() == current_wave)
     {
+      sf::RectangleShape fade{sf::Vector2f{1920.f, 1080.f}};
+      timer.restart();
+      while( timer.getElapsedTime().asSeconds() < 1.5f )
+        {
+	  fade.setFillColor(sf::Color(0,0,0,20));
+	  window.draw(fade);
+	  window.display();
+        }
       stateNum = 4;
     }
 }
@@ -354,23 +374,46 @@ void PlayState::setPlayer(Player* entity)
 //CREATE WAVES
 std::vector<std::vector<std::shared_ptr<Enemy>>> Engine::create_waves(sf::Vector2f p_speed,sf::Vector2f k_speed, float playheight, sf::Vector2f scale, sf::Texture &peasant_tex, sf::Texture &knight_tex, sf::Texture &sword_tex)
 {
+  int max_waves{};
+  std::map<int, std::vector<int>> enemies{};
+  std::ifstream file("playfield.txt");
+  if( file.is_open() )
+    {
+      std::string line;
+      std::getline(file,line);
+      std::getline(file,line);
+        
+      max_waves = std::stoi(line);
+      for( int linum{0}; linum < 4; linum++ )
+        {
+	  std::getline(file,line);
+	  std::getline(file,line);
+	  std::vector<int> v{};
+	  v.push_back(std::stoi(line));
+	  std::getline(file,line);
+	  std::getline(file,line);
+	  v.push_back(std::stoi(line));
+	  enemies.emplace(std::pair<int, std::vector<int>>{linum, v});
+        }
+    }
+
   std::vector<std::vector<std::shared_ptr<Enemy>>> waves;
-  int max_waves{2};
-  int peasants{2};
-  int knights{2};
   for (int current_wave{}; current_wave < max_waves; current_wave++)
     {
+      int knights{enemies.at(current_wave)[0]};
+      int peasants{enemies.at(current_wave)[1]};
       std::vector<std::shared_ptr<Enemy>> subwave;
       //Peasants
       for(int i{};i <  peasants; i++)
         {
 	  int spacing{i};
+	  int spawnpoint{1};
 	  if ( spacing % 2 == 0 )
             {
-	      spacing *= -1;
+	      spawnpoint *= -1;
             }
 	  std::shared_ptr<Enemy> p = std::make_shared<Enemy>(Peasant{p_speed, 
-		sf::Vector2f{(300.f * spacing), 
+		sf::Vector2f{(200.f * spacing * spawnpoint + 1920 *spawnpoint), 
 		  playheight}, 
 		scale, 
 		  peasant_tex});
@@ -384,8 +427,9 @@ std::vector<std::vector<std::shared_ptr<Enemy>>> Engine::create_waves(sf::Vector
             {
 	      spacing *= -1;
             }
-	  std::shared_ptr<Enemy> p = std::make_shared<Enemy>(Knight{k_speed, 
-		sf::Vector2f{(300.f * spacing), playheight}, 
+	  
+	  std::shared_ptr<Knight> p = std::make_shared<Knight>(Knight{k_speed, 
+		sf::Vector2f{(300.f * spacing + 1920 * spacing), playheight}, 
 		scale, 
 		  knight_tex,
 		  sword_tex});
