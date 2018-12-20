@@ -147,8 +147,9 @@ void Player::player_update(sf::Time time, sf::Event &event_queue, sf::RenderWind
         timer.restart();
         while( timer.getElapsedTime().asSeconds() < 1.5f )
         {
-            fade.setFillColor(sf::Color(0,0,0,1));
+            fade.setFillColor(sf::Color(0,0,0,20));
             window.draw(fade);
+            window.display();
         }
         stateNum = 3;
     }

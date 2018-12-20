@@ -1,18 +1,18 @@
 # number of waves
-4
+1
 #knights wave1
 0
 #peasants wave1
-20
-#knights wave2
 2
+#knights wave2
+0
 #peasants wave2
-40
+0
 #knights wave3
-10
+0
 #peasants wave3
-70
+0
 #knights wave4
-50
+0
 #peasants wave4
-100
+0

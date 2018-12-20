@@ -66,7 +66,10 @@ public:
                 sf::RenderWindow &window,
                 int &stateNum,
                 sf::Text &score,
-                unsigned const &total_points);
+                unsigned const &total_points, 
+                std::map<std::string, sf::Texture> &bgs);
+private:
+    sf::Clock timer;
 };
 
 class PlayState : public State

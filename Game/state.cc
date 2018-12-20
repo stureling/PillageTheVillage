@@ -2,7 +2,7 @@
 
 //ENGINE FUNCTIONS
 Engine::Engine()
-: window{sf::VideoMode(1920, 1080), "Hang in there, bud"}, bgs{}
+: window{sf::VideoMode(1920, 1080), "Hang in there, bud"}, bgs{}, total_points{}
   /**\brief Constructor for Engine.
    *
    * Engine's constructor is responsible for creating the window with the correct resolution. 
@@ -22,7 +22,7 @@ void Engine::run()
  */
 {
     int stateNum{1};
-    sf::Texture menu_tex, go_tex, win_tex, play_tex;
+    sf::Texture menu_tex, go_tex, win_tex, play_tex, win_clean;
     menu_tex.loadFromFile("static/bg/menu.png");
     bgs.emplace(std::make_pair(std::string("Menu"), sf::Texture (menu_tex)));
 
@@ -33,6 +33,8 @@ void Engine::run()
     bgs.emplace(std::make_pair(std::string("GO"), sf::Texture (go_tex)));
 
     win_tex.loadFromFile("static/bg/monster.png");
+    win_clean.loadFromFile("static/bg/win_clean.png");
+    bgs.emplace(std::make_pair(std::string("Monster"), sf::Texture (win_tex)));
     bgs.emplace(std::make_pair(std::string("Win"), sf::Texture (win_tex)));
 
     while(stateNum == 1) {
@@ -153,8 +155,9 @@ void Engine::switchWin(sf::RenderWindow &window, int &stateNum, unsigned const &
     score.setPosition(930.f, 500.f);
     score.setScale(2.f, 2.f);
     
-    while (stateNum == 4) {
-      w.update(event, window, stateNum, score, total_points);
+    while (stateNum == 4) 
+    {
+        w.update(event, window, stateNum, score, total_points, bgs);
         window.display();
     }
 }
@@ -232,7 +235,7 @@ void GameOver::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
     }
 }
 
-void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum, sf::Text &score, unsigned const &total_points) 
+void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &stateNum, sf::Text &score, unsigned const &total_points, std::map<std::string, sf::Texture> &bgs)
     /** \brief A function to update the game while in WinState.
      *
      *  Draws the background image. 
@@ -240,12 +243,24 @@ void WinState::update(sf::Event &event_queue, sf::RenderWindow &window, int &sta
      *  Triggers switching of states by changing the value of stateNum.
      */
 {
-    window_resize(window);
-    window.clear(sf::Color(0, 0, 0, 255));
-    window.draw(bg);
-    score.setString(std::to_string(total_points));
-    score.setOrigin(score.getLocalBounds().width/2.f, 0.f);
-    window.draw(score);
+    while( timer.getElapsedTime().asSeconds() < 2.f )
+    {
+        if( std::fmod(timer.getElapsedTime().asSeconds(), 0.02f) < 0.01 )
+        {
+            bg.setTexture(bgs.at("Monster"));
+        }
+        else
+        {
+            bg.setTexture(bgs.at("Win"));
+        }
+        window_resize(window);
+        window.clear(sf::Color(0, 0, 0, 255));
+        window.draw(bg);
+        score.setString(std::to_string(total_points));
+        score.setOrigin(score.getLocalBounds().width/2.f, 0.f);
+        window.draw(score);
+        window.display();
+    }
     while (window.pollEvent(event_queue)) {
         if (event_queue.type == sf::Event::KeyReleased
             && event_queue.key.code == sf::Keyboard::Return) {
@@ -307,6 +322,14 @@ void PlayState::update(sf::Time time, sf::Event &event, sf::RenderWindow &window
 
     if (enemies.size() == 0 && waves.size() == current_wave)
     {
+        sf::RectangleShape fade{sf::Vector2f{1920.f, 1080.f}};
+        timer.restart();
+        while( timer.getElapsedTime().asSeconds() < 1.5f )
+        {
+            fade.setFillColor(sf::Color(0,0,0,20));
+            window.draw(fade);
+            window.display();
+        }
         stateNum = 4;
     }
 }
